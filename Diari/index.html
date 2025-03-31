@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diari Interaktif Modern</title>
+    <!-- Google Fonts (Contoh: Montserrat & Open Sans) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <!-- Link ke file CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="diary-container" id="diary-content-area">
+        <header class="diary-header">
+            <h1 contenteditable="true">Diari Pribadiku</h1>
+            <p class="subtitle" contenteditable="true">Momen & Cerita Tak Terlupakan</p>
+        </header>
+
+        <main class="diary-entries">
+            <!-- Contoh Entri Diari 1 -->
+            <article class="diary-entry">
+                <div class="entry-image-container">
+                    <img src="img/2.png" alt="Gambar Momen 1" class="entry-image editable-image" data-original-src="img/2.png">
+                    <div class="image-edit-overlay">Klik untuk ganti gambar</div>
+                </div>
+                <div class="entry-text-content">
+                    <header class="entry-header">
+                        <h2 class="entry-title" contenteditable="true">Petualangan di Pantai</h2>
+                        <p class="entry-meta">
+                            <time datetime="2023-10-27" contenteditable="true">Jumat, 27 Oktober 2023</time> | <span class="entry-location" contenteditable="true">Pantai Kuta</span>
+                        </p>
+                    </header>
+                    <div class="entry-content" contenteditable="true">
+                        <p>Hari ini luar biasa! Aku menghabiskan waktu di pantai, merasakan pasir hangat di antara jari kaki dan mendengar deburan ombak. Matahari terbenamnya begitu indah, warnanya oranye kemerahan.</p>
+                        <p>Aku juga mencoba belajar selancar, walaupun lebih banyak jatuh daripada berdiri! Tapi itu sangat menyenangkan. Momen yang tak akan terlupakan.</p>
+                    </div>
+                    <footer class="entry-footer">
+                        <span class="mood-indicator happy" contenteditable="true">Mood: Bahagia 😄</span>
+                    </footer>
+                </div>
+            </article>
+
+            <!-- Contoh Entri Diari 2 -->
+            <article class="diary-entry">
+                 <div class="entry-image-container">
+                    <img src="img/2.png" alt="Gambar Momen 2" class="entry-image editable-image" data-original-src="img/2.png">
+                     <div class="image-edit-overlay">Klik untuk ganti gambar</div>
+                </div>
+                 <div class="entry-text-content">
+                    <header class="entry-header">
+                        <h2 class="entry-title" contenteditable="true">Sore Tenang dengan Buku</h2>
+                         <p class="entry-meta">
+                            <time datetime="2023-10-26" contenteditable="true">Kamis, 26 Oktober 2023</time> | <span class="entry-location" contenteditable="true">Perpustakaan Kota</span>
+                        </p>
+                    </header>
+                    <div class="entry-content" contenteditable="true">
+                        <p>Hujan turun lembut di luar jendela perpustakaan. Aku menemukan sudut yang nyaman dan tenggelam dalam novel fantasi yang seru. Aroma buku-buku tua dan suasana tenang membuatku merasa damai.</p>
+                        <p>Terkadang, melarikan diri ke dunia lain melalui cerita adalah penyegaran terbaik.</p>
+                    </div>
+                    <footer class="entry-footer">
+                        <span class="mood-indicator calm" contenteditable="true">Mood: Tenang 😌</span>
+                    </footer>
+                </div>
+            </article>
+
+            <!-- Tambahkan lebih banyak entri di sini dengan struktur yang sama -->
+
+        </main>
+    </div>
+
+    <div class="action-buttons">
+        <button id="save-html-btn">Simpan sebagai HTML</button>
+        <button id="save-jpg-btn">Simpan sebagai JPG</button>
+        <button id="add-entry-btn">Tambah Halaman Baru</button> <!-- Tombol Tambahan -->
+    </div>
+
+    <!-- Library html2canvas (untuk simpan JPG) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" integrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibyoeqMV/TJlSKda6FXzoEyYGjTe+vXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <!-- Script Kustom -->
+    <script src="script.js"></script>
+</body>
+</html>

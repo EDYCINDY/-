@@ -1,0 +1,294 @@
+/* Reset dasar & Font Global */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Open Sans', sans-serif; /* Font utama */
+    background-color: #eef2f7; /* Warna latar belakang abu-abu sangat muda */
+    color: #333;
+    line-height: 1.7;
+    padding-bottom: 100px; /* Beri ruang untuk tombol aksi */
+}
+
+/* Kontainer Utama */
+.diary-container {
+    max-width: 900px;
+    margin: 50px auto;
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%); /* Gradient putih lembut */
+    border-radius: 16px;
+    box-shadow: 0 10px 35px rgba(150, 150, 180, 0.15); /* Bayangan lebih jelas */
+    overflow: hidden; /* Penting untuk border-radius */
+    border: 1px solid #e0e4e9;
+}
+
+/* Header Diari */
+.diary-header {
+    background: linear-gradient(to right, #6a82fb, #fc5c7d); /* Gradient menarik */
+    color: #ffffff;
+    padding: 40px 50px;
+    text-align: center;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.diary-header h1 {
+    margin: 0 0 8px 0;
+    font-family: 'Montserrat', sans-serif; /* Font judul */
+    font-size: 2.8em;
+    font-weight: 700;
+}
+
+.diary-header .subtitle {
+    margin: 0;
+    font-size: 1.2em;
+    font-weight: 400;
+    opacity: 0.9;
+}
+
+/* Area Entri */
+.diary-entries {
+    padding: 40px 50px;
+}
+
+/* Setiap Entri Diari */
+.diary-entry {
+    display: flex; /* Menggunakan Flexbox */
+    gap: 30px; /* Jarak antara gambar dan teks */
+    background-color: #ffffff;
+    border: 1px solid #e9ecef;
+    border-radius: 12px;
+    margin-bottom: 35px;
+    padding: 30px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.diary-entry:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* Kontainer Gambar */
+.entry-image-container {
+    flex: 0 0 200px; /* Lebar tetap untuk gambar, tidak menyusut/melebar */
+    position: relative; /* Untuk positioning overlay */
+    cursor: pointer; /* Menandakan bisa diklik */
+    border-radius: 8px;
+    overflow: hidden; /* Agar gambar tidak keluar dari border-radius */
+    align-self: flex-start; /* Biar align di atas jika teks lebih panjang */
+}
+
+.entry-image {
+    display: block;
+    width: 100%;
+    height: 200px; /* Tinggi tetap untuk konsistensi */
+    object-fit: cover; /* Memastikan gambar menutupi area tanpa distorsi */
+    transition: transform 0.3s ease;
+    background-color: #f0f0f0; /* Warna placeholder jika gambar error */
+}
+
+.entry-image-container:hover .entry-image {
+    transform: scale(1.05); /* Efek zoom saat hover */
+}
+
+/* Overlay Edit Gambar */
+.image-edit-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Latar belakang semi-transparan */
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    font-size: 0.9em;
+    opacity: 0; /* Sembunyi secara default */
+    transition: opacity 0.3s ease;
+    pointer-events: none; /* Biar klik tetap ke container */
+}
+
+.entry-image-container:hover .image-edit-overlay {
+    opacity: 1; /* Muncul saat hover */
+}
+
+/* Kontainer Teks */
+.entry-text-content {
+    flex: 1; /* Mengambil sisa ruang */
+    display: flex;
+    flex-direction: column; /* Susun header, content, footer secara vertikal */
+}
+
+/* Header Entri */
+.entry-header {
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #f1f3f5; /* Garis pemisah lebih halus */
+}
+
+.entry-title {
+    margin: 0 0 8px 0;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1.7em;
+    font-weight: 700;
+    color: #343a40;
+}
+
+.entry-meta {
+    font-size: 0.9em;
+    color: #868e96; /* Warna abu-abu lebih lembut */
+    margin: 0;
+}
+.entry-meta time, .entry-meta .entry-location {
+    font-weight: 600; /* Sedikit lebih tebal */
+}
+
+/* Konten Entri */
+.entry-content p {
+    margin: 0 0 15px 0;
+    color: #495057;
+}
+.entry-content p:last-child {
+    margin-bottom: 0;
+}
+
+/* Footer Entri (Mood) */
+.entry-footer {
+    margin-top: auto; /* Mendorong footer ke bawah */
+    padding-top: 15px;
+    border-top: 1px solid #f8f9fa;
+    text-align: right;
+    font-size: 0.9em;
+}
+
+.mood-indicator {
+    display: inline-block;
+    padding: 5px 12px;
+    border-radius: 15px;
+    color: #fff;
+    font-weight: 600;
+}
+/* Contoh warna mood */
+.mood-indicator.happy { background-color: #20c997; } /* Teal */
+.mood-indicator.calm { background-color: #66d9e8; } /* Cyan muda */
+.mood-indicator.grateful { background-color: #ffc107; color: #333;} /* Kuning */
+.mood-indicator.reflective { background-color: #6c757d; } /* Abu */
+.mood-indicator.sad { background-color: #adb5bd; } /* Abu muda */
+.mood-indicator.excited { background-color: #fd7e14; } /* Oranye */
+
+/* Styling untuk elemen yang bisa diedit */
+[contenteditable="true"] {
+    outline: none; /* Hapus outline default browser */
+    cursor: text; /* Kursor teks saat hover */
+    transition: background-color 0.2s ease;
+}
+
+[contenteditable="true"]:hover {
+    background-color: #f8f9fa; /* Latar sedikit berubah saat hover */
+}
+
+[contenteditable="true"]:focus {
+    background-color: #e9ecef; /* Latar lebih jelas saat fokus (sedang diedit) */
+    box-shadow: 0 0 0 2px rgba(106, 130, 251, 0.3); /* Efek glow saat fokus */
+    border-radius: 3px; /* Sedikit rounded saat fokus */
+}
+
+/* Tombol Aksi */
+.action-buttons {
+    position: fixed; /* Tetap di layar saat scroll */
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(255, 255, 255, 0.95);
+    padding: 10px 20px;
+    border-radius: 30px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+    display: flex;
+    gap: 15px;
+    z-index: 100; /* Pastikan di atas konten lain */
+    backdrop-filter: blur(5px); /* Efek blur (jika browser support) */
+}
+
+.action-buttons button {
+    padding: 10px 20px;
+    font-size: 1em;
+    font-weight: 600;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    color: white;
+}
+
+#save-html-btn { background-color: #007bff; } /* Biru */
+#save-jpg-btn { background-color: #28a745; } /* Hijau */
+#add-entry-btn { background-color: #ffc107; color: #333; } /* Kuning */
+
+#save-html-btn:hover { background-color: #0056b3; transform: translateY(-2px);}
+#save-jpg-btn:hover { background-color: #1f7e39; transform: translateY(-2px);}
+#add-entry-btn:hover { background-color: #e0a800; transform: translateY(-2px);}
+
+/* Responsif */
+@media (max-width: 992px) {
+    .diary-container {
+        margin: 30px 20px;
+        max-width: none; /* Lebar penuh dengan margin */
+    }
+    .diary-entries {
+        padding: 30px;
+    }
+}
+
+@media (max-width: 768px) {
+    .diary-entry {
+        flex-direction: column; /* Tumpuk gambar di atas teks */
+        gap: 20px;
+        padding: 25px;
+    }
+    .entry-image-container {
+        flex: 0 0 auto; /* Reset flex basis */
+        width: 100%; /* Gambar lebar penuh */
+        height: 250px; /* Sesuaikan tinggi */
+        align-self: center; /* Pusatkan container */
+    }
+    .entry-image {
+         height: 250px;
+    }
+     .diary-header {
+        padding: 30px 35px;
+    }
+    .diary-header h1 {
+        font-size: 2.2em;
+    }
+}
+
+@media (max-width: 480px) {
+     .diary-header {
+        padding: 25px;
+    }
+     .diary-header h1 {
+        font-size: 1.9em;
+    }
+     .diary-header .subtitle {
+        font-size: 1em;
+    }
+    .diary-entries {
+        padding: 20px;
+    }
+    .diary-entry {
+        padding: 20px;
+    }
+    .entry-title {
+        font-size: 1.5em;
+    }
+     .action-buttons {
+        width: 90%;
+        bottom: 10px;
+        padding: 8px 10px;
+        gap: 10px;
+    }
+    .action-buttons button {
+        padding: 8px 15px;
+        font-size: 0.9em;
+    }
+}
