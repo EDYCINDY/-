@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Update title dynamically later if needed -->
+    <title>Editor Undangan Modern</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" integrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibyoeqMV/TJlSKda6FXzoEyYGjTe+vXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <!-- Link to the updated CSS file -->
+    <link rel="stylesheet" href="css/style.css">
+       
+</head>
+<body>
+
+<!-- Sticky Toolbar Container -->
+<div class="toolbar-container">
+    <div class="toolbar">
+        <label for="imageUpload" class="toolbar-button" title="Ganti gambar utama">
+            🖼️ Ganti Gambar
+        </label>
+        <input type="file" id="imageUpload" accept="image/*">
+
+        <button id="saveHtmlBtn" class="toolbar-button" title="Simpan progres sebagai file HTML (bisa diedit lagi nanti)">
+            💾 Simpan HTML
+        </button>
+        <button id="saveJpgBtn" class="toolbar-button" title="Simpan tampilan saat ini sebagai gambar JPG (tidak bisa diedit)">
+            📷 Simpan JPG
+        </button>
+        <button id="resetBtn" class="toolbar-button reset" title="Kembalikan semua ke template awal">
+            🔄 Reset Semua
+        </button>
+    </div>
+    <!-- Status Message Area (Positioned below toolbar) -->
+    <div id="statusMessage" class="status-message" aria-live="polite"></div>
+</div>
+
+
+<!-- Main Content Area -->
+<div class="main-content">
+    <div class="invitation-container" id="invitationCard">
+
+        <div class="event-image-wrapper">
+            <!-- Initial src stored in data attribute for reset -->
+            <img id="eventImageDisplay"
+                 src="img/1.png" 
+                 data-initial-src="img/1.png"
+                 alt="Gambar Acara Utama"
+                 onerror="this.onerror=null; this.src='https://via.placeholder.com/680x350/dee2e6/6c757d?text=Pratinjau+Gambar';"> 
+            <label for="imageUpload" class="image-upload-overlay" title="Klik untuk ganti gambar">Ganti Gambar</label>
+        </div>
+
+        <div class="content-padding">
+            <header class="invitation-header">
+                <!-- Store initial HTML in data attribute -->
+                <h1 contenteditable="true" data-initial-html="Anda Diundang Dengan Hormat">Anda Diundang Dengan Hormat</h1>
+                <h2 contenteditable="true" data-initial-html="Untuk Menghadiri Acara Spesial Kami">Untuk Menghadiri Acara Spesial Kami</h2>
+                 <p class="event-name-placeholder" contenteditable="true" data-initial-html="[Nama Acara Anda: Pernikahan / Syukuran / Ulang Tahun / dll.]">[Nama Acara Anda: Pernikahan / Syukuran / Ulang Tahun / dll.]</p>
+            </header>
+
+            <section class="invitation-body">
+                <p class="intro" contenteditable="true" data-initial-html="Dengan penuh rasa syukur dan kebahagiaan, kami mengundang Bapak/Ibu/Saudara/i untuk hadir dan turut serta dalam momen istimewa kami. Kehadiran Anda adalah suatu kehormatan bagi kami.">
+                    Dengan penuh rasa syukur dan kebahagiaan, kami mengundang Bapak/Ibu/Saudara/i
+                    untuk hadir dan turut serta dalam momen istimewa kami. Kehadiran Anda adalah suatu kehormatan bagi kami.
+                </p>
+
+                <div class="details-section">
+                    <h3 contenteditable="true" data-initial-html="Detail Acara">Detail Acara</h3>
+                    <div class="detail-item">
+                        <strong class="detail-label">Acara</strong>
+                        <span class="detail-value" contenteditable="true" data-initial-html="[Contoh: Resepsi Pernikahan]">Resepsi Pernikahan</span>
+                    </div>
+                     <div class="detail-item">
+                        <strong class="detail-label">Tanggal</strong>
+                        <span class="detail-value" contenteditable="true" data-initial-html="Sabtu, 25 Desember 2025">Sabtu, 25 Desember 2025</span>
+                    </div>
+                    <div class="detail-item">
+                        <strong class="detail-label">Waktu</strong>
+                        <span class="detail-value" contenteditable="true" data-initial-html="19:00 WIB - Selesai">19:00 WIB - Selesai</span>
+                    </div>
+                    <div class="detail-item">
+                        <strong class="detail-label">Lokasi</strong>
+                        <span class="detail-value location" contenteditable="true" data-initial-html="Nama Gedung/Tempat Acara<br>Jl. Contoh Alamat No. 123, Kota Anda">
+                            Nama Gedung/Tempat Acara<br>Jl. Contoh Alamat No. 123, Kota Anda
+                        </span>
+                    </div>
+                     <div class="detail-item optional">
+                        <strong class="detail-label">Dress Code</strong>
+                        <span class="detail-value" contenteditable="true" data-initial-html="Batik / Smart Casual (Opsional)">Batik / Smart Casual (Opsional)</span>
+                    </div>
+                     <div class="detail-item optional">
+                        <strong class="detail-label">Catatan Tambahan</strong>
+                        <span class="detail-value" contenteditable="true" data-initial-html="Mohon hadir tepat waktu. Terima kasih. (Opsional)">Mohon hadir tepat waktu. Terima kasih. (Opsional)</span>
+                    </div>
+                </div>
+            </section>
+
+            <section class="rsvp-section">
+                <h3 contenteditable="true" data-initial-html="Konfirmasi Kehadiran (RSVP)">Konfirmasi Kehadiran (RSVP)</h3>
+                <p contenteditable="true" data-initial-html="Mohon konfirmasi kehadiran Anda sebelum tanggal <strong contenteditable='true' data-initial-html='[Tanggal Batas RSVP]'>[Tanggal Batas RSVP]</strong> agar kami dapat mempersiapkan acara dengan baik.">
+                    Mohon konfirmasi kehadiran Anda sebelum tanggal <strong contenteditable="true" data-initial-html="[Tanggal Batas RSVP]">[Tanggal Batas RSVP]</strong> agar kami dapat mempersiapkan acara dengan baik.
+                </p>
+                <!-- Keep links editable for flexibility, but guide the user -->
+                <p class="rsvp-contact" contenteditable="true" data-initial-html="Kontak RSVP: <strong>[Nama Kontak]</strong><br><a href='tel:+6281234567890'>📞 +62 812 3456 7890</a> | <a href='mailto:email@contoh.com'>✉️ email@contoh.com</a>">
+                    Kontak RSVP: <strong>[Nama Kontak]</strong><br>
+                    <a href="tel:+6281234567890">📞 +62 812 3456 7890</a> |
+                    <a href="mailto:email@contoh.com">✉️ email@contoh.com</a>
+                </p>
+            </section>
+
+            <section class="closing-section">
+                <p contenteditable="true" data-initial-html="Merupakan suatu kebahagiaan dan kehormatan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir untuk memberikan doa restu.">
+                    Merupakan suatu kebahagiaan dan kehormatan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir untuk memberikan doa restu.
+                </p>
+                <p contenteditable="true" data-initial-html="Atas kehadiran dan doanya, kami ucapkan terima kasih.">Atas kehadiran dan doanya, kami ucapkan terima kasih.</p>
+            </section>
+        </div>
+
+        <footer class="invitation-footer">
+            <p contenteditable="true" data-initial-html="Hormat Kami Yang Mengundang,">Hormat Kami Yang Mengundang,</p>
+            <p><strong contenteditable="true" data-initial-html="[Nama Pengundang / Keluarga Besar]">[Nama Pengundang / Keluarga Besar]</strong></p>
+        </footer>
+
+    </div> <!-- End invitation-container -->
+</div> <!-- End main-content -->
+
+<script>
+    // --- DOM Elements ---
+    const imageUploadInput = document.getElementById('imageUpload');
+    const eventImageDisplay = document.getElementById('eventImageDisplay');
+    const saveHtmlBtn = document.getElementById('saveHtmlBtn');
+    const saveJpgBtn = document.getElementById('saveJpgBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const invitationCard = document.getElementById('invitationCard');
+    const statusMessageEl = document.getElementById('statusMessage');
+    const allActionButtons = document.querySelectorAll('.toolbar-button'); // Select all buttons for disabling
+    const editableElements = document.querySelectorAll('[contenteditable="true"]');
+
+    // --- Initial State Storage ---
+    function storeInitialState() {
+        // Store initial image src (use data-initial-src as the master)
+        eventImageDisplay.src = eventImageDisplay.dataset.initialSrc || 'img/default-invitation-image.png'; // Ensure it uses the data attribute on load
+
+        // Store initial HTML for editable elements from their data-initial-html attribute
+        editableElements.forEach(el => {
+            // Ensure the data attribute exists, if not, maybe log an error or use current HTML
+            if (!el.dataset.initialHtml) {
+                console.warn("Element missing data-initial-html:", el);
+                el.dataset.initialHtml = el.innerHTML; // Fallback: use current content
+            }
+            // Set the initial content based on the data attribute
+            el.innerHTML = el.dataset.initialHtml;
+        });
+        console.log("Initial state loaded/restored from data attributes.");
+    }
+
+     // --- Status Message Function ---
+    let statusTimeout;
+    function showStatus(message, type = 'info', duration = 4000) {
+        clearTimeout(statusTimeout);
+        // Add relevant icon based on type
+        let icon = '';
+        switch (type) {
+            case 'success': icon = '✅ '; break;
+            case 'error':   icon = '❌ '; break;
+            case 'loading': icon = '⏳ '; break; // Simple spinner/hourglass
+            case 'info':    icon = 'ℹ️ '; break;
+        }
+        statusMessageEl.innerHTML = icon + message; // Use innerHTML to render icon
+        statusMessageEl.className = `status-message ${type} show`;
+
+        if (duration > 0) {
+            statusTimeout = setTimeout(() => {
+                statusMessageEl.classList.remove('show');
+            }, duration);
+        }
+    }
+
+    // --- Button State Management ---
+    function disableButtons(loadingButton = null) {
+        allActionButtons.forEach(btn => {
+            btn.disabled = true;
+            if (btn === loadingButton) {
+                btn.dataset.originalText = btn.innerHTML; // Store original text/icon
+                btn.innerHTML = '⏳ Memproses...'; // Update text
+            } else {
+                btn.style.opacity = '0.6'; // Dim other buttons
+            }
+        });
+    }
+
+    function enableButtons() {
+        allActionButtons.forEach(btn => {
+            btn.disabled = false;
+            if (btn.dataset.originalText) {
+                btn.innerHTML = btn.dataset.originalText; // Restore original text/icon
+                delete btn.dataset.originalText;
+            }
+            btn.style.opacity = '1'; // Restore opacity
+        });
+    }
+
+    // --- Image Upload Handling ---
+    function handleImageUpload(event) {
+        const file = event.target.files[0];
+        if (file && file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                eventImageDisplay.src = e.target.result;
+                showStatus('Gambar berhasil diganti.', 'success');
+            }
+            reader.onerror = function() {
+                showStatus('Gagal memuat pratinjau gambar.', 'error');
+            }
+            reader.readAsDataURL(file);
+        } else if (file) {
+            showStatus('Format file tidak valid. Pilih file gambar (JPG, PNG, GIF, dll).', 'error');
+            event.target.value = null; // Clear the invalid selection
+        }
+        // Reset input value so the same file can be selected again if needed
+        event.target.value = null;
+    }
+
+    // --- Reset Functionality ---
+    function resetContent() {
+        if (confirm('Anda yakin ingin mengembalikan semua teks dan gambar ke template awal? Perubahan yang belum disimpan akan hilang.')) {
+            disableButtons(resetBtn); // Disable buttons during reset
+            try {
+                storeInitialState(); // Re-apply initial state from data attributes
+                showStatus('Konten berhasil direset ke template awal.', 'success');
+            } catch (error) {
+                console.error("Error during reset:", error);
+                showStatus('Gagal mereset konten.', 'error');
+            } finally {
+                enableButtons(); // Re-enable buttons
+            }
+        }
+    }
+
+    // --- Generate Filename ---
+    function generateFilename(extension) {
+        const eventNameElement = invitationCard.querySelector('.event-name-placeholder');
+        // Try getting name from header h2 if placeholder is empty/default
+        const headerH2 = invitationCard.querySelector('.invitation-header h2');
+        let baseName = 'undangan'; // Default
+
+        if (eventNameElement && eventNameElement.innerText.trim() && !eventNameElement.innerText.includes('[')) {
+            baseName = eventNameElement.innerText.trim();
+        } else if (headerH2 && headerH2.innerText.trim() && !headerH2.innerText.includes('[')) {
+            // Fallback to H2 if placeholder is default/empty
+             baseName = headerH2.innerText.trim();
+        }
+
+        // Sanitize filename
+        const sanitizedName = baseName.replace(/[^a-z0-9]/gi, '_').toLowerCase().substring(0, 30); // Limit length
+        return `${sanitizedName || 'undangan_kustom'}.${extension}`;
+    }
+
+    // --- Save HTML Functionality ---
+    function saveHtml() {
+        disableButtons(saveHtmlBtn);
+        showStatus('Menyiapkan file HTML...', 'loading', 0);
+
+        // Use a timeout to allow the UI to update (show loading state) before heavy processing
+        setTimeout(() => {
+            try {
+                const clone = document.documentElement.cloneNode(true);
+
+                // --- Clean up the clone ---
+                const clonedEditable = clone.querySelectorAll('[contenteditable="true"]');
+                const clonedToolbarContainer = clone.querySelector('.toolbar-container'); // Target the container
+                const clonedStatus = clone.querySelector('.status-message'); // Status message might be inside toolbar container
+                const clonedScript = clone.querySelector('script');
+                const clonedImageOverlay = clone.querySelector('.image-upload-overlay');
+
+                // Remove editing attributes and styles
+                clonedEditable.forEach(el => {
+                    el.removeAttribute('contenteditable');
+                    el.removeAttribute('data-initial-html'); // Important to remove this
+                    el.style.outline = ''; el.style.border = ''; el.style.padding = '';
+                    el.style.cursor = ''; el.style.backgroundColor = ''; el.style.boxShadow = '';
+                    // Remove hover/focus classes if they exist (though styles are removed)
+                    el.classList.remove('editable-hover', 'editable-focus');
+                });
+
+                // Remove editor-specific elements
+                if (clonedToolbarContainer) clonedToolbarContainer.remove();
+                if (clonedStatus) clonedStatus.remove(); // Might already be removed if inside toolbar
+                if (clonedScript) clonedScript.remove();
+                if (clonedImageOverlay) clonedImageOverlay.remove(); // Remove the image overlay label
+
+
+                // Get clean HTML (outerHTML of the modified clone)
+                const finalHtmlContent = '<!DOCTYPE html>\n' + clone.outerHTML; // Ensure Doctype
+                const blob = new Blob([finalHtmlContent], { type: 'text/html' });
+                const filename = generateFilename('html');
+
+                // Trigger download
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = filename;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(link.href);
+
+                showStatus(`File "${filename}" (HTML) berhasil diunduh!`, 'success');
+            } catch (error) {
+                console.error('Error saat menyimpan HTML:', error);
+                showStatus('Gagal menyimpan HTML. Periksa konsol.', 'error', 6000);
+            } finally {
+                enableButtons();
+            }
+        }, 50); // Short delay for UI update
+    }
+
+
+    // --- Save JPG Functionality ---
+    function saveJpg() {
+        disableButtons(saveJpgBtn);
+        showStatus('Memproses gambar JPG... Ini mungkin perlu beberapa detik.', 'loading', 0);
+
+        // Temporarily remove focus/hover visual cues for cleaner capture
+        const focusedElement = document.activeElement;
+        if (focusedElement && focusedElement.hasAttribute('contenteditable')) {
+            focusedElement.blur(); // Remove focus from editable element
+        }
+        editableElements.forEach(el => {
+            // Use a temporary class to override interactive styles might be safer
+             el.classList.add('is-capturing');
+        });
+
+        // Use a timeout to allow UI update and style application
+        setTimeout(() => {
+            html2canvas(invitationCard, {
+                useCORS: true,
+                allowTaint: true, // May be needed if images are complex/external
+                scale: 2, // Fixed scale for high resolution
+                logging: false,
+                backgroundColor: '#ffffff', // Explicit background for JPG
+                 onclone: (clonedDoc) => {
+                     // Ensure no interactive styles in the clone
+                     const clonedEditables = clonedDoc.querySelectorAll('.is-capturing');
+                     clonedEditables.forEach(el => {
+                        // Force removal of borders/outlines if needed in the clone
+                        el.style.border = 'none';
+                        el.style.outline = 'none';
+                        el.style.boxShadow = 'none';
+                        el.style.backgroundColor = ''; // Use default background
+                     });
+                     const overlay = clonedDoc.querySelector('.image-upload-overlay');
+                     if(overlay) overlay.style.display = 'none'; // Hide overlay in screenshot
+                 }
+            }).then(canvas => {
+                const imageQuality = 0.92;
+                const imageDataUrl = canvas.toDataURL('image/jpeg', imageQuality);
+                const filename = generateFilename('jpg');
+
+                // Trigger download
+                const link = document.createElement('a');
+                link.href = imageDataUrl;
+                link.download = filename;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+
+                showStatus(`File "${filename}" (JPG) berhasil diunduh!`, 'success');
+
+            }).catch(error => {
+                console.error('Error saat membuat JPG:', error);
+                showStatus(`Gagal membuat JPG: ${error.message}. Coba lagi atau periksa konsol.`, 'error', 6000);
+            }).finally(() => {
+                 // Restore styles by removing the temporary class
+                editableElements.forEach(el => { el.classList.remove('is-capturing'); });
+                enableButtons();
+            });
+        }, 100); // Slightly longer delay for JPG capture
+    }
+
+
+    // --- Event Listeners ---
+    document.addEventListener('DOMContentLoaded', storeInitialState); // Load initial state
+    imageUploadInput.addEventListener('change', handleImageUpload);
+    saveHtmlBtn.addEventListener('click', saveHtml);
+    saveJpgBtn.addEventListener('click', saveJpg);
+    resetBtn.addEventListener('click', resetContent);
+
+    // Add focus/blur classes for CSS styling hooks (optional but can be useful)
+    editableElements.forEach(el => {
+        el.addEventListener('focus', () => el.classList.add('editable-focus'));
+        el.addEventListener('blur', () => el.classList.remove('editable-focus'));
+         // You could add hover classes too if needed via JS, but CSS :hover is usually sufficient
+    });
+
+
+</script>
+
+</body>
+</html>
