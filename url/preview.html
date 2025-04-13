@@ -3,24 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pratinjau File v9</title>
+    <title>Pratinjau File v11</title>
     <style>
-        /* Reset dasar */
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        html, body { height: 100%; overflow: hidden; font-family: system-ui, sans-serif; background-color: #f8f9fa; color: #495057; }
+        /* Basic styles for preview elements within the iframe */
+        html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; font-family: system-ui, sans-serif; background-color: #f8f9fa; color: #495057; }
         body { display: flex; justify-content: center; align-items: center; padding: 10px; text-align: center; }
-        #previewContainer { max-width: 100%; max-height: 100%; width: auto; height: auto; overflow: auto; display: flex; justify-content: center; align-items: center; border: 1px dashed #ccc; /* Make container visible */ min-height: 50px; min-width: 100px; }
-
-        /* Preview Element Styles (Simplified for debugging focus) */
+        #previewContainer { max-width: 100%; max-height: 100%; width: auto; height: auto; overflow: auto; display: flex; justify-content: center; align-items: center; /* border: 1px dashed #ccc; /* Uncomment to see container */ min-height: 50px; min-width: 100px; }
         #previewContainer img, #previewContainer video, #previewContainer audio, #previewContainer iframe, #previewContainer pre {
-            max-width: 100%; max-height: calc(100vh - 40px); height: auto; display: block; border: 1px solid #dee2e6; border-radius: 4px; background-color: #fff;
+            max-width: 100%; max-height: calc(100vh - 25px); /* Adjusted max height */ height: auto; display: block; border: 1px solid #dee2e6; border-radius: 4px; background-color: #fff; margin: auto; /* Center in flex container */
         }
-        #previewContainer pre { width: 100%; text-align: left; padding: 15px; white-space: pre-wrap; word-wrap: break-word; font-size: 0.9em; }
-        #previewContainer iframe { width: 98%; height: calc(100vh - 40px); }
-
-        /* Status/Error Messages */
+        #previewContainer video, #previewContainer audio { min-width: 250px; width: auto; /* Allow shrinking */}
+        #previewContainer pre { width: 100%; text-align: left; padding: 15px; white-space: pre-wrap; word-wrap: break-word; font-size: 0.9em; overflow: auto; }
+        #previewContainer iframe { width: 100%; height: calc(100vh - 25px); /* Fill available */ }
         .message { font-style: italic; color: #6c757d; padding: 20px; }
-        .error-message { color: #721c24; font-weight: 500; background-color: #f8d7da; padding: 15px; border-radius: 5px; border: 1px solid #f5c6cb; display: inline-block; max-width: 90%; }
+        .error-message { color: #721c24; font-weight: 500; background-color: #f8d7da; padding: 15px; border-radius: 5px; border: 1px solid #f5c6cb; display: inline-block; max-width: 90%; margin: auto; }
     </style>
 </head>
 <body>
@@ -29,139 +25,99 @@
     </div>
 
     <script>
-        console.log("PREVIEW v9 Script: Initializing.");
+        // --- SCRIPT for preview.html (v11) ---
+        console.log("PREVIEW v11 Script: Initializing.");
         const previewContainer = document.getElementById('previewContainer');
-        const statusText = document.getElementById('statusText');
-        const expectedOrigin = '*'; // Use '*' for file:// protocol, specify real origin in production
+        // IMPORTANT: Set this to the URL of your index.html on GitHub Pages
+        // e.g., const expectedParentOrigin = 'https://github.com/EDYCINDY/-/blob/main/url/preview.html';
+        const expectedParentOrigin = '*'; // Use '*' for local testing, CHANGE FOR PRODUCTION
 
         // --- Robust escapeHtml ---
-        function escapeHtml(unsafe) {
-            if (typeof unsafe !== 'string') {
-                try { return String(unsafe); } catch (e) { return '[Conversion Error]'; }
-            }
+        function escapeHtml(unsafe) { /* ... as in index.html ... */
+            if (typeof unsafe !== 'string') { try { return String(unsafe); } catch (e) { return '[Conversion Error]'; } }
             return unsafe.replace(/&/g, "&").replace(/</g, "<").replace(/>/g, ">").replace(/"/g, "\"").replace(/'/g, "'");
         }
 
         // --- Update Status Display ---
         function setStatus(type, text) {
-             console.log(`PREVIEW v9 Status: [${type}] ${text}`); // Log status updates
-             previewContainer.innerHTML = ''; // Clear container
+             console.log(`PREVIEW v11 Status: [${type}] ${text}`);
+             previewContainer.innerHTML = '';
              const statusElement = document.createElement('p');
              const prefix = type === 'error' ? '❌ Error: ' : 'ℹ️ ';
              statusElement.className = type === 'error' ? 'error-message' : 'message';
-             statusElement.innerHTML = prefix + escapeHtml(text); // Use escapeHtml just in case
+             statusElement.innerHTML = prefix + escapeHtml(text);
              previewContainer.appendChild(statusElement);
         }
 
         // --- Message Handler ---
         window.addEventListener('message', (event) => {
-            // Basic Origin Check (important for security)
-             if (expectedOrigin !== '*' && event.origin !== expectedOrigin) {
-                 console.warn(`PREVIEW v9: Message rejected from unexpected origin: ${event.origin}. Expected: ${expectedOrigin}`);
-                 return;
-             }
-
-            console.log(`PREVIEW v9: Message received from origin: ${event.origin}`, event.data); // Log origin and full data
+            // Security Check
+            if (expectedParentOrigin !== '*' && event.origin !== expectedParentOrigin) {
+                console.warn(`PREVIEW v11: Message rejected from unexpected origin: ${event.origin}. Expected: ${expectedParentOrigin}`);
+                return;
+            }
+            console.log(`PREVIEW v11: Message received from origin ${event.origin}:`, event.data);
 
             const message = event.data;
             if (!message || typeof message !== 'object' || !message.type) {
-                console.warn("PREVIEW v9: Invalid message format received:", message);
-                setStatus('error', 'Format pesan dari halaman utama tidak valid.');
-                return;
+                console.warn("PREVIEW v11: Invalid message format received."); return;
             }
 
-            // Clear previous content explicitly before processing
-            previewContainer.innerHTML = '<p class="message">Processing preview...</p>'; // Temporary processing message
+            previewContainer.innerHTML = '<p class="message">Processing preview...</p>';
             let previewElement = null;
 
             try {
-                console.log(`PREVIEW v9: Processing message type: ${message.type}`);
+                console.log(`PREVIEW v11: Processing message type: ${message.type}`);
                 switch (message.type) {
                     case 'renderPreview':
                         const { fileData, fileType = 'unknown', fileName = 'file' } = message.payload || {};
                         const safeFileName = escapeHtml(fileName);
                         const safeFileType = escapeHtml(fileType);
+                        console.log(`PREVIEW v11: Rendering type: ${safeFileType}, Name: ${safeFileName}`);
+                        if (fileData === null || typeof fileData === 'undefined') { setStatus('error', 'Data pratinjau kosong diterima.'); return; }
+                        const dataStart = (typeof fileData === 'string') ? fileData.substring(0, 70) : '[Non-string data]';
+                        console.log(`PREVIEW v11: Received data start: ${dataStart}...`);
 
-                        console.log(`PREVIEW v9: Rendering preview for type: ${safeFileType}, Name: ${safeFileName}`);
-
-                        if (fileData === null || typeof fileData === 'undefined') {
-                             setStatus('error', 'Data pratinjau kosong atau tidak valid diterima.');
-                             return; // Stop processing
-                        }
-
-                        // Log start of data for debugging (avoid logging huge strings)
-                        const dataStart = (typeof fileData === 'string') ? fileData.substring(0, 100) : '[Non-string data]';
-                        console.log(`PREVIEW v9: Received data starting with: ${dataStart}...`);
-
-                        if (safeFileType.startsWith('image/')) {
-                            previewElement = document.createElement('img');
-                            previewElement.src = fileData; // Expecting Data URL
-                            previewElement.alt = `Pratinjau ${safeFileName}`;
-                            previewElement.onload = () => console.log("PREVIEW v9: Image loaded successfully.");
-                            previewElement.onerror = () => setStatus('error', `Gagal memuat pratinjau gambar: ${safeFileName}`);
-                        } else if (safeFileType.startsWith('video/')) {
-                            previewElement = document.createElement('video');
-                            previewElement.src = fileData; // Expecting Data URL
-                            previewElement.controls = true;
-                             previewElement.onloadeddata = () => console.log("PREVIEW v9: Video data loaded.");
-                            previewElement.onerror = () => setStatus('error', `Gagal memuat pratinjau video: ${safeFileName}`);
-                        } else if (safeFileType.startsWith('audio/')) {
-                            previewElement = document.createElement('audio');
-                            previewElement.src = fileData; // Expecting Data URL
-                            previewElement.controls = true;
-                             previewElement.onloadeddata = () => console.log("PREVIEW v9: Audio data loaded.");
-                            previewElement.onerror = () => setStatus('error', `Gagal memuat pratinjau audio: ${safeFileName}`);
-                        } else if (safeFileType === 'text/html') {
-                            previewElement = document.createElement('iframe');
-                            previewElement.src = fileData; // Expecting Data URL
-                            previewElement.sandbox = 'allow-same-origin'; // Be cautious with sandbox permissions
-                            previewElement.title = `Pratinjau HTML: ${safeFileName}`;
-                            previewElement.onload = () => console.log("PREVIEW v9: HTML Iframe loaded successfully.");
-                            previewElement.onerror = () => setStatus('error', `Gagal memuat pratinjau HTML: ${safeFileName} (Data URL terlalu panjang/diblokir?)`);
-                        } else if (safeFileType.startsWith('text/')) {
-                            previewElement = document.createElement('pre');
-                            previewElement.textContent = fileData; // Expecting text content
-                             console.log("PREVIEW v9: Text content set for <pre> element.");
+                        // Create Preview Element Logic
+                        if (safeFileType.startsWith('image/')) { /* ... img element ... */
+                            previewElement = document.createElement('img'); previewElement.src = fileData; previewElement.alt = `Pratinjau ${safeFileName}`;
+                            previewElement.onload = () => console.log("PREVIEW v11: Image loaded."); previewElement.onerror = () => setStatus('error', `Gagal memuat gambar: ${safeFileName}`);
+                        } else if (safeFileType.startsWith('video/')) { /* ... video element ... */
+                            previewElement = document.createElement('video'); previewElement.src = fileData; previewElement.controls = true;
+                            previewElement.onloadeddata = () => console.log("PREVIEW v11: Video loaded."); previewElement.onerror = () => setStatus('error', `Gagal memuat video: ${safeFileName}`);
+                        } else if (safeFileType.startsWith('audio/')) { /* ... audio element ... */
+                            previewElement = document.createElement('audio'); previewElement.src = fileData; previewElement.controls = true;
+                            previewElement.onloadeddata = () => console.log("PREVIEW v11: Audio loaded."); previewElement.onerror = () => setStatus('error', `Gagal memuat audio: ${safeFileName}`);
+                        } else if (safeFileType === 'text/html') { /* ... iframe element ... */
+                            previewElement = document.createElement('iframe'); previewElement.src = fileData; previewElement.sandbox = 'allow-same-origin'; previewElement.title = `Pratinjau HTML: ${safeFileName}`;
+                            previewElement.onload = () => console.log("PREVIEW v11: HTML Iframe loaded."); previewElement.onerror = () => setStatus('error', `Gagal memuat HTML: ${safeFileName}`);
+                        } else if (safeFileType.startsWith('text/')) { /* ... pre element ... */
+                            previewElement = document.createElement('pre'); previewElement.textContent = fileData; console.log("PREVIEW v11: Text content set.");
                         } else {
-                             console.log(`PREVIEW v9: Preview not available for type: ${safeFileType}`);
-                            setStatus('message', `Pratinjau tidak tersedia untuk tipe file: <code>${safeFileType}</code>.`);
+                            setStatus('message', `Pratinjau tidak tersedia untuk tipe: <code>${safeFileType}</code>.`);
                         }
                         break;
-
-                    case 'showStatus':
-                         const { message: statusMsg = 'Status tidak diketahui.', isError = false } = message.payload || {};
-                         console.log(`PREVIEW v9: Showing status from parent: ${statusMsg}`);
-                         setStatus(isError ? 'error' : 'message', statusMsg);
+                    case 'showStatus': /* ... handle status message ... */
+                         const { message: statusMsg = '?', isError = false } = message.payload || {};
+                         console.log(`PREVIEW v11: Showing status: ${statusMsg}`); setStatus(isError ? 'error' : 'message', statusMsg);
                          break;
-
-                    case 'clearPreview':
-                        console.log("PREVIEW v9: Clearing preview area.");
-                        setStatus('message', 'Pilih file di halaman utama untuk pratinjau.');
+                    case 'clearPreview': /* ... clear preview area ... */
+                        console.log("PREVIEW v11: Clearing preview."); setStatus('message', 'Pilih file baru di halaman utama.');
                         break;
-
-                    default:
-                        console.warn(`PREVIEW v9: Tipe pesan tidak dikenal: ${message.type}`);
-                        setStatus('message', `Perintah tidak dikenal diterima: ${escapeHtml(message.type)}`);
+                    default: console.warn(`PREVIEW v11: Tipe pesan tidak dikenal: ${message.type}`); setStatus('message', `Perintah tidak dikenal: ${escapeHtml(message.type)}`);
                 }
 
-                // Append the created element if one was made
-                if (previewElement) {
-                    console.log("PREVIEW v9: Appending preview element to container:", previewElement.tagName);
-                    previewContainer.innerHTML = ''; // Clear "Processing..." message
+                if (previewElement) { // Append if created
+                    console.log("PREVIEW v11: Appending element:", previewElement.tagName);
+                    previewContainer.innerHTML = ''; // Clear "Processing..."
                     previewContainer.appendChild(previewElement);
-                } else {
-                     console.log("PREVIEW v9: No preview element was created for this message type or an issue occurred.");
-                     // If no element but no explicit status set, maybe set a default clear message?
-                     if (previewContainer.innerHTML.includes('Processing preview...')) {
-                          setStatus('message', 'Pratinjau tidak ditampilkan.');
-                     }
+                } else if (previewContainer.innerHTML.includes('Processing')) { // If no element and still processing message
+                    setStatus('message', 'Pratinjau tidak dapat ditampilkan.');
                 }
-
             } catch (error) {
-                console.error("PREVIEW v9: Error processing message:", error);
-                setStatus('error', `Kesalahan internal saat menampilkan pratinjau: ${escapeHtml(error.message)}`);
-                 // Optionally send error back to parent?
-                 // sendMessageToParent({ type: 'previewError', payload: error.message });
+                console.error("PREVIEW v11: Error processing message:", error);
+                setStatus('error', `Kesalahan internal: ${escapeHtml(error.message)}`);
+                sendMessageToParent({ type: 'previewError', payload: error.message }); // Report error back
             }
         });
 
@@ -169,30 +125,22 @@
         function sendMessageToParent(message) {
             if (window.parent && window.parent !== window) {
                  try {
-                      console.log(`PREVIEW v9: Sending message to parent (${expectedOrigin}):`, message);
-                      window.parent.postMessage(message, expectedOrigin);
-                 } catch (e) {
-                      console.error("PREVIEW v9: Failed to send message to parent:", e);
-                      setStatus('error', 'Gagal mengirim status ke halaman utama.');
-                 }
-            } else {
-                 console.warn("PREVIEW v9: Cannot access parent window to send message.");
-            }
+                      console.log(`PREVIEW v11: Sending message to parent (${expectedParentOrigin}):`, message);
+                      window.parent.postMessage(message, expectedParentOrigin);
+                 } catch (e) { console.error("PREVIEW v11: Failed send message:", e); }
+            } else { console.warn("PREVIEW v11: Cannot access parent window."); }
         }
 
         // --- Initialization ---
-        console.log("PREVIEW v9 Script: Adding load listener.");
+        // Send "ready" message ONCE the window is fully loaded
         window.addEventListener('load', () => {
-            console.log("PREVIEW v9: Window loaded.");
-            setStatus('message', 'Pratinjau siap. Menunggu file...');
-            sendMessageToParent({ type: 'previewReady', payload: { message: 'Preview frame is loaded and ready.' } });
+            console.log("PREVIEW v11: Window loaded. Sending 'previewReady'.");
+            setStatus('message', 'Pratinjau siap.');
+            sendMessageToParent({ type: 'previewReady', payload: { message: 'Preview frame loaded.' } });
         });
-
-         // Initial status set via JS in case load event is missed or delayed
-         setStatus('message', 'PREVIEW: Memuat...');
-
-        console.log("PREVIEW v9 Script: Initialization sequence complete.");
-
+        // Initial status before load
+        setStatus('message', 'PREVIEW: Memuat...');
+        console.log("PREVIEW v11 Script: Initialization sequence complete.");
     </script>
 </body>
 </html>
