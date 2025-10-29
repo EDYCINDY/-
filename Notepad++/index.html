@@ -49,6 +49,9 @@
     <!-- CodeMirror Linting Addons CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/lint/lint.min.css">
     
+    <!-- FontAwesome CSS (PERBAIKAN: DITAMBAHKAN) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-..." crossorigin="anonymous" referrerpolicy="no-referrer" />
+    
     <!-- html2canvas -->
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     
@@ -218,6 +221,28 @@
         .tombol-install:hover {
             background-color: #f0f0f0;
         }
+        
+        /* Gaya dasar untuk notifikasi update PWA agar tidak merusak layout */
+        .update-notification {
+            position: fixed; 
+            top: 10px; 
+            right: 10px; 
+            background: #ffc107; 
+            color: #212529; 
+            padding: 10px 15px; 
+            border-radius: 8px; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1); 
+            z-index: 2000; 
+            display: none; 
+            align-items: center; 
+            gap: 15px; 
+        }
+        .update-notification button { 
+            background: #212529; 
+            color: white; 
+            padding: 5px 10px; 
+            border-radius: 5px;
+        }
         </style>
 
     <script>
@@ -233,7 +258,13 @@
       </script> 
   </head>
   <body>
-
+    
+     <!-- PERBAIKAN: DITAMBAHKAN HTML Notifikasi Update PWA (karena JS memanggilnya) -->
+     <div id="updateNotification" class="update-notification">
+        <p style="margin: 0;">Versi baru tersedia! Muat ulang untuk update.</p>
+        <button id="reloadButton">Perbarui</button>
+     </div>
+      
      <div id="install-container" class="install-prompt hidden">
         <p>Install Aplikasi Menu untuk pengalaman terbaik!</p>
         <button id="install-button" class="tombol-install">Install Sekarang</button>
@@ -274,12 +305,14 @@
       <div class="dropdown">
           <button onclick="toggleDropdown()" class="btn-success"><i class="fas fa-download"></i> Simpan Kode...</button>
           <div id="dlDropdown" class="dropdown-menu">
+              <!-- Semua tombol ini memanggil downloadFile() -->
               <button onclick="downloadFile('html')"><i class="fab fa-html5"></i> HTML (.html)</button>
               <button onclick="downloadFile('php')"><i class="fab fa-php"></i> PHP (.php)</button>
               <button onclick="downloadFile('css')"><i class="fab fa-css3-alt"></i> CSS (.css)</button>
               <button onclick="downloadFile('js')"><i class="fab fa-js"></i> JavaScript (.js)</button>
               <button onclick="downloadFile('txt')"><i class="fas fa-file-alt"></i> Text (.txt)</button>
               <hr style="margin: 5px 0; border-color: #eee;">
+              <!-- Tombol ini memanggil downloadCustom() -->
               <button onclick="downloadCustom()"><i class="fas fa-terminal"></i> Ekstensi Lain</button>
           </div>
       </div>
@@ -325,6 +358,24 @@
             'txt': { ext: '.txt', mime: 'text/plain', mode: 'text/plain' }
         };
         let currentFontSize = 16;
+
+        // --- PERBAIKAN: DITAMBAHKAN FUNGSI STATUS UTILITY YANG HILANG ---
+        function showStatus(message, type = 'info', duration = 2000) {
+            statusEl.textContent = message;
+            statusEl.className = 'status'; // Reset classes
+            if (type) {
+                statusEl.classList.add(type);
+            }
+            if (duration > 0) {
+                clearTimeout(statusEl.timer);
+                statusEl.timer = setTimeout(() => {
+                    statusEl.textContent = 'Data dimuat. Siap!'; // Kembali ke teks default
+                    statusEl.className = ''; // Hapus semua kelas tipe
+                    statusEl.classList.add('status'); // Pertahankan kelas dasar
+                }, duration);
+            }
+        }
+        // ----------------------------------------------------------------
 
         // --- Initialization ---
         window.onload = () => {
@@ -495,6 +546,52 @@
             }
         }
         
+        // --- PERBAIKAN: DITAMBAHKAN FUNGSI DOWNLOAD FILE YANG HILANG ---
+        function downloadFile(type) {
+            toggleDropdown(); // Tutup dropdown
+            const config = FILE_CONFIGS[type];
+            if (!config) return showStatus('Ekstensi tidak valid.', 'danger');
+
+            const code = cm.getValue();
+            const blob = new Blob([code], { type: config.mime });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `kode-edy-${Date.now()}${config.ext}`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            showStatus(`Berhasil menyimpan sebagai ${config.ext}`, 'success');
+        }
+
+        // --- PERBAIKAN: DITAMBAHKAN FUNGSI DOWNLOAD CUSTOM YANG HILANG ---
+        function downloadCustom() {
+            toggleDropdown();
+            const ext = prompt("Masukkan ekstensi file (misal: json, sql, py):", "txt");
+            if (!ext || ext.trim() === "") return showStatus('Pembatalan simpan.', 'info');
+
+            const mime = prompt(`Masukkan MIME type untuk *${ext}* (misal: text/plain, application/json):`, "text/plain");
+            if (!mime || mime.trim() === "") return showStatus('Pembatalan simpan.', 'info');
+
+            const code = cm.getValue();
+            const blob = new Blob([code], { type: mime });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `kode-edy-${Date.now()}.${ext.toLowerCase().replace(/[^a-z0-9]/g, '')}`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            showStatus(`Berhasil menyimpan sebagai .${ext.toLowerCase()}`, 'success');
+        }
+        // ----------------------------------------------------------------
+
         async function shareAsText() {
             const code = cm.getValue();
             const shareData = {
@@ -529,7 +626,8 @@
      // --- LOGIKA PWA UPDATE NOTIFICATION ---
         let newWorker;
         function showUpdateNotification() {
-            const notification = document.getElementById('updateNotification');
+            // PERBAIKAN: document.getElementById('updateNotification') sekarang ada di HTML
+            const notification = document.getElementById('updateNotification'); 
             const reloadButton = document.getElementById('reloadButton');
             notification.style.display = 'flex';
             reloadButton.addEventListener('click', () => {
@@ -537,7 +635,8 @@
             });
         }
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('./sw.js').then(reg => {
+            // PERBAIKAN: Mengubah './sw.js' ke 'service-worker.js' agar sesuai dengan registrasi di head
+            navigator.serviceWorker.register('service-worker.js').then(reg => {
                 if (reg.waiting) {
                     newWorker = reg.waiting;
                     showUpdateNotification();
