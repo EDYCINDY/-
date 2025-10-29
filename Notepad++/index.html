@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <title>Notepad Dibuat Edy Sahputra</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+     <!-- Link ke Manifest -->
+    <link rel="manifest" href="./manifest.json">
+    <!-- Warna Tema untuk Browser di Mobile -->
+    <meta name="theme-color" content="#28a745" >
+    
+     <!-- Favicon -->
+   <link href='./favicon.ico' rel='image_src' />
+     <!-- Atau, jika menggunakan PNG -->
+    <!-- <link rel="icon" href="favicon.png" type="image/png"> -->
+    <!-- Atau, jika menggunakan SVG -->
+    <!-- <link rel="icon" href="favicon.svg" type="image/svg+xml"> -->
+
+
+  <link href='./android-chrome-512x512.png' rel='apple-touch-icon' sizes='152x152' />
+  <link href='./favicon.ico' rel='icon' type='image/x-icon' />
+  <link href='./favicon.ico' rel='shortcut icon' type='image/x-icon' />
+    
+    <!--====== Favicon Icon ======-->
+    <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="./favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="./favicon-16x16.png">
+    <link rel="manifest" href="webmanifest">    
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Menu Pilihan">
+    <meta property="og:description" content="All in One">
+    <meta property="og:image" content="favicon.ico"> <!-- Ganti dengan URL gambar yang diinginkan -->
+    <meta property="og:url" content="https://edycindy.github.io/-/Notepad++">
+    <meta property="og:type" content="website">
+
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Menu Pilihan">
+    <meta name="twitter:description" content="All in One">
+    <meta name="twitter:image" content="favicon.ico"> <!-- Ganti dengan URL gambar yang diinginkan -->
+    <meta name="twitter:url" content="https://edycindy.github.io/-/Notepad++">
+    <link type="image/x-icon" rel="shortcut icon" href="data:image/webp;base64,UklGRuYBAABXRUJQVlA4WAoAAAAQAAAAHwAAHwAAQUxQSH8AAAABcFzbtprcb1EkVlZmKdIKgHqgCJi9N/kSzzQiFLlt20gZt+5+Apb199MA/a8Dun/vrMNVSN0yt8YQv415MRljrUMJGz0Rz5Imbfcb8UzpZjVZ4GwLaVHOp9yc4vClvPyBipO8V7H4X4h8Ppn9MfV8NGzng9WY/69depqZPQAAAFZQOCBAAQAAEAgAnQEqIAAgAD6dPphItDGmJLAYDACwE4lsAJ0y0HmfmdEAqcno//RV/zO/l/6o8QHr++jf0AM+TZ7JmOCjXtyVtevbUV9m4AD+3idVs+qFOB5/59CoMnH/dartQOGJLAaa3Qi9NTU1Wl+MRMoHNdWSt0a/Xjp2LILTSQnUmThYd5l9/cpWI8ZB0pF62MnoT9MxI7rj7gTtrbO69eARnPT3trUDc5YvJ3WfJRfG4d7edE3axwiXYkTZB2TeChWw4p6vBr53ekTT2aWKZAyG7TQNnZETyoI8L0FrRHclwmk9oySWl8NauawP41zZTt+vNIptRZ9fXq+Z1vy92RJvk5+TxuUXqeIV/4VRXhKa3Sf73AunQfGB6OlTip5qbVfD4464xCnsKv2HMB0GGLT/f9cdZoVBJYD7+BfyX6KgAAA=">
+    
+    <!-- CodeMirror CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+    
+    <!-- CodeMirror Linting Addons CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/lint/lint.min.css">
+    
+    <!-- html2canvas -->
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    
+    <style>
+        :root {
+            --primary-color: #0d6efd;
+            --secondary-color: #198754;
+            --danger-color: #dc3545;
+            --warning-color: #ffc107;
+            --info-color: #0dcaf0;
+            --dark-color: #212529;
+            --light-color: #f8f9fa;
+        }
+
+        /* Kode CSS dari V11 */
+        body {
+            height: 100vh;
+            background: #2e2e2e;
+            padding: 1.5rem;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .editor-container {
+            width: 100%;
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            /* Hapus atau atur max-height di sini jika mengganggu */
+            max-height: 80vh; 
+        }
+
+        .CodeMirror {
+            background: #1e1e1e !important;
+            color: #fff !important;
+            font-family: 'Courier New', Courier, monospace !important;
+            font-weight: 700 !important;
+            font-size: 1rem;
+            line-height: 1.4;
+            border-radius: 10px;
+            padding: 1rem;
+            width: 90%; /* Sesuaikan dengan style lama */
+            height: 90%; /* Sesuaikan dengan style lama */
+            max-width: 90%;
+            max-height: 90%;
+            margin: 0 auto;
+            border: none;
+            /* Penting: Hapus max-height dari CodeMirror untuk membiarkan Full JPG berfungsi */
+            height: 100%; 
+            max-height: 100%;
+        }
+        
+        /* Tambahan style CodeMirror */
+        .CodeMirror-gutters { background: #1e1e1e !important; border-right: 1px solid #3e3e3e !important; }
+        .CodeMirror-linenumber { color: #555 !important; }
+        .CodeMirror-lint-marker-error { color: #dc3545; }
+        .CodeMirror-lint-marker-warning { color: #ffc107; }
+
+        .buttons {
+            padding-left: 5%;
+            padding-right: 5%;
+            padding-top: .5rem;
+            padding-bottom: .5rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            width: 100%;
+            max-width: 900px;
+        }
+
+        button {
+            background: #555;
+            color: #eee;
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: 700;
+            padding: 8px 16px;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 1rem;
+            margin: 0; 
+            opacity: .8;
+            transition: .3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            text-decoration: none;
+            cursor: pointer;
+            border: none;
+        }
+
+        button:hover { opacity: 1; background: #777; }
+        .btn-info { background: #0dcaf0; color: #212529 !important; }
+        .btn-warning { background: #ffc107; color: #212529 !important; }
+        .btn-danger { background: #dc3545; }
+        .btn-success { background: #198754; }
+        .btn-primary { background: #0d6efd; }
+        
+        .dropdown { position: relative; }
+        .dropdown-menu { display: none; position: absolute; top: 100%; left: 0; background: #333; box-shadow: 0 5px 15px rgba(0,0,0,0.5); border-radius: 5px; padding: 5px; z-index: 1000; min-width: 180px; margin-top: 5px; }
+        .dropdown-menu.show { display: block; }
+        .dropdown-menu button { width: 100%; justify-content: flex-start; background: #555; color: #eee; margin-bottom: 5px; padding: 8px; }
+        .dropdown-menu button:hover { background-color: #777; }
+        
+        #status { margin-top: 10px; padding: 5px 10px; border-radius: 5px; font-weight: 700; text-align: center; color: #eee; background: #333; font-size: 0.9rem; }
+        #status.loading { background: #0dcaf0; color: #212529; }
+        #status.danger { background: #dc3545; color: #eee; }
+        #status.success { background: #198754; color: #eee; }
+
+        /* Scrollbar styles */
+        ::-webkit-scrollbar { height: 0; width: 12px; background-color: #222; }
+        ::-webkit-scrollbar-thumb { background-color: #5e5e5e; border-radius: 12px; border: 3px solid transparent; background-clip: content-box; }
+
+        @media (max-width: 600px) {
+            .buttons button { font-size: 0.8rem; padding: 6px 8px; flex-grow: 1; }
+        }
+    
+     /* [TAMBAHKAN INI] GAYA UNTUK PROMPT INSTALASI KUSTOM */
+        .install-prompt {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #007bff;
+            /* Warna biru yang menarik perhatian */
+            color: white;
+            padding: 15px 25px;
+            border-radius: 12px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.25);
+            z-index: 2000;
+            /* Pastikan di atas notifikasi update */
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 90%;
+            max-width: 500px;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .install-prompt.hidden {
+            display: none;
+        }
+
+        .install-prompt p {
+            margin: 0;
+            padding-right: 20px;
+            color: white;
+            font-weight: 500;
+        }
+
+        .tombol-install {
+            background-color: #ffffff;
+            color: #007bff;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            white-space: nowrap;
+            /* Mencegah teks tombol terpotong */
+            transition: background-color 0.2s;
+        }
+
+        .tombol-install:hover {
+            background-color: #f0f0f0;
+        }
+        </style>
+
+    <script>
+        if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.register('service-worker.js')
+            .then(function (registration) {
+              console.log('ServiceWorker registered with scope:', registration.scope);
+            })
+            .catch(function (error) {
+              console.log('ServiceWorker registration failed:', error);
+            });
+        }
+      </script> 
+  </head>
+  <body>
+
+     <div id="install-container" class="install-prompt hidden">
+        <p>Install Aplikasi Menu untuk pengalaman terbaik!</p>
+        <button id="install-button" class="tombol-install">Install Sekarang</button>
+      </div>
+
+    <div class="editor-container">
+        <textarea id="editor-area">
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <title>Notepad++</title>
+</head>
+<body>
+    <h1>Selamat Datang</h1>
+    <p>Perbaikan: Tombol "Unduh Full JPG" sekarang seharusnya berfungsi untuk kode yang panjang dan di-scroll.</p>
+    <div style="height: 1500px; padding-top: 10px; color: #777;">
+        <!-- Tambahkan banyak baris di sini untuk menguji scroll penuh JPG -->
+        <?php 
+        for ($i=1; $i <= 50; $i++) { 
+            echo "Baris uji panjang ke-$i\n"; 
+        } 
+        ?>
+    </div>
+</body>
+</html>
+        </textarea>
+    </div>
+
+    <div id="status">Data dimuat. Siap!</div>
+
+    <div class="buttons">
+      <button onclick="undo()" class="btn-info"><i class="fas fa-undo"></i> Undo</button>
+      <button onclick="redo()" class="btn-info"><i class="fas fa-redo"></i> Redo</button>
+      
+      <button onclick="document.getElementById('fileInput').click()" class="btn-warning"><i class="fas fa-folder-open"></i> Buka File</button>
+      <input type="file" id="fileInput" hidden onchange="handleFileSelect(event)">
+
+      <div class="dropdown">
+          <button onclick="toggleDropdown()" class="btn-success"><i class="fas fa-download"></i> Simpan Kode...</button>
+          <div id="dlDropdown" class="dropdown-menu">
+              <button onclick="downloadFile('html')"><i class="fab fa-html5"></i> HTML (.html)</button>
+              <button onclick="downloadFile('php')"><i class="fab fa-php"></i> PHP (.php)</button>
+              <button onclick="downloadFile('css')"><i class="fab fa-css3-alt"></i> CSS (.css)</button>
+              <button onclick="downloadFile('js')"><i class="fab fa-js"></i> JavaScript (.js)</button>
+              <button onclick="downloadFile('txt')"><i class="fas fa-file-alt"></i> Text (.txt)</button>
+              <hr style="margin: 5px 0; border-color: #eee;">
+              <button onclick="downloadCustom()"><i class="fas fa-terminal"></i> Ekstensi Lain</button>
+          </div>
+      </div>
+   
+      <button id="shareBtn" onclick="shareAsText()" class="btn-primary"><i class="fas fa-share-alt"></i> Bagikan Text</button>
+      
+      <button onclick="changeFontSize(2)" class="btn-info">Text Size +</button>
+      <button onclick="changeFontSize(-2)" class="btn-info">Text Size -</button>
+      <button onclick="clearNotes()" class="btn-danger"><i class="fas fa-trash"></i> Reset</button>
+    </div>
+
+    <!-- CodeMirror JS Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/xml/xml.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/javascript/javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/css/css.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/htmlmixed/htmlmixed.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/php/php.min.js"></script>
+    
+    <!-- CodeMirror Linting Addons & Engines -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/lint/lint.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/lint/html-lint.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/lint/css-lint.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/lint/javascript-lint.min.js"></script>
+    
+    <!-- Lint Engines -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/htmlhint/1.1.4/htmlhint.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/csslint/1.0.5/csslint.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jshint/2.13.6/jshint.min.js"></script>
+    
+
+    <script>
+        const STORAGE_KEY = 'notepad_v12_edy_data';
+        let cm;
+        const statusEl = document.getElementById('status');
+        const dropdownEl = document.getElementById('dlDropdown');
+
+        const FILE_CONFIGS = {
+            'html': { ext: '.html', mime: 'text/html', mode: 'htmlmixed' },
+            'php': { ext: '.php', mime: 'application/x-php', mode: 'php' },
+            'css': { ext: '.css', mime: 'text/css', mode: 'css' },
+            'js': { ext: '.js', mime: 'application/javascript', mode: 'javascript' },
+            'txt': { ext: '.txt', mime: 'text/plain', mode: 'text/plain' }
+        };
+        let currentFontSize = 16;
+
+        // --- Initialization ---
+        window.onload = () => {
+            initEditor();
+            checkCapabilities();
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.dropdown')) dropdownEl.classList.remove('show');
+            });
+        };
+
+        function initEditor() {
+            cm = CodeMirror.fromTextArea(document.getElementById('editor-area'), {
+                lineNumbers: true,
+                mode: 'htmlmixed',
+                theme: 'default',
+                indentUnit: 4,
+                lineWrapping: true,
+                gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter", "CodeMirror-lint-markers"], 
+                lint: true,
+                viewportMargin: Infinity 
+            });
+            
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) {
+                cm.setValue(saved);
+                cm.clearHistory();
+            }
+            
+            cm.on('change', () => {
+                localStorage.setItem(STORAGE_KEY, cm.getValue());
+            });
+
+            const wrapper = cm.getWrapperElement();
+            wrapper.style.fontSize = currentFontSize + 'px';
+            cm.refresh();
+        }
+
+        // --- Editor Operations ---
+        function changeFontSize(val) {
+            currentFontSize += val;
+            if (currentFontSize < 10) currentFontSize = 10;
+            if (currentFontSize > 30) currentFontSize = 30;
+            
+            const wrapper = cm.getWrapperElement();
+            wrapper.style.fontSize = currentFontSize + 'px';
+            cm.refresh();
+            showStatus(`Ukuran font: ${currentFontSize}px`, 'info', 1500);
+        }
+
+        function undo() { cm.undo(); showStatus('Undo dilakukan.', 'info', 1000); }
+        function redo() { cm.redo(); showStatus('Redo dilakukan.', 'info', 1000); }
+        function clearNotes() {
+            if (confirm('Hapus semua kode dan reset editor?')) {
+                cm.setValue('// Editor di-reset. Mulai ketik di sini!');
+                cm.clearHistory();
+                localStorage.removeItem(STORAGE_KEY);
+                cm.setOption('mode', 'htmlmixed');
+                cm.setOption('lint', true); // Aktifkan lagi linting HTML default
+                showStatus('Editor di-reset', 'danger');
+            }
+        }
+
+        // --- Muat File Lokal & Deteksi Kode/Linting ---
+        function handleFileSelect(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            if (file.size > 2 * 1024 * 1024) return showStatus('File terlalu besar (Maks 2MB)', 'danger');
+
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                cm.setValue(ev.target.result);
+                cm.clearHistory();
+                
+                const ext = file.name.split('.').pop().toLowerCase();
+                const config = Object.values(FILE_CONFIGS).find(c => c.ext.includes(ext));
+                
+                let modeToSet = 'text/plain';
+                let lintOption = false;
+                
+                if (config) {
+                    modeToSet = config.mode;
+                    if (modeToSet === 'htmlmixed' || modeToSet === 'css' || modeToSet === 'javascript') {
+                        lintOption = true;
+                    }
+                } else if (ext === 'json') {
+                    modeToSet = 'application/json'; 
+                    lintOption = true;
+                }
+
+                cm.setOption('mode', modeToSet);
+                cm.setOption('lint', lintOption); 
+                
+                if (lintOption) {
+                    CodeMirror.signal(cm, 'change', cm); 
+                }
+
+                showStatus(`File dimuat: ${file.name}. Mode: ${modeToSet}.`, 'success');
+            };
+            reader.readAsText(file);
+            e.target.value = '';
+        }
+
+        // --- FULL JPG Capture Engine (FIXED) ---
+        async function generateFullJpgBlob() {
+            showStatus('Merender Full JPG, mohon tunggu...', 'loading', 0);
+
+            const cmWrapper = cm.getWrapperElement();
+            const originalWrapperHeight = cmWrapper.style.height;
+            const originalScrollInfo = cm.getScrollInfo();
+            const cmScroller = cmWrapper.querySelector('.CodeMirror-scroll');
+            const originalScrollerOverflowY = cmScroller.style.overflowY;
+
+            try {
+                // 1. Matikan scrollbar Y di scroller (CodeMirror-scroll)
+                cmScroller.style.overflowY = 'hidden'; 
+                
+                // 2. Set tinggi CodeMirror ke auto, dan refresh
+                cm.setSize(null, 'auto');
+                cm.refresh();
+
+                // 3. Hitung tinggi konten penuh setelah refresh
+                const totalHeight = cm.getScrollInfo().height;
+                
+                // 4. Atur ulang tinggi wrapper ke totalHeight untuk capture
+                cmWrapper.style.height = totalHeight + 'px';
+                
+                // Tunggu DOM selesai menyesuaikan
+                await new Promise(r => setTimeout(r, 100));
+
+                // 5. Capture elemen CodeMirror Wrapper
+                const canvas = await html2canvas(cmWrapper, {
+                    scale: 2, 
+                    useCORS: true,
+                    backgroundColor: '#1e1e1e', 
+                    height: totalHeight,
+                    windowHeight: totalHeight,
+                    scrollX: -window.scrollX,
+                    scrollY: -window.scrollY
+                });
+
+                return new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.9));
+
+            } catch (e) {
+                console.error('JPG Error:', e);
+                throw e;
+            } finally {
+                // 6. Kembalikan semua ke state awal
+                cmScroller.style.overflowY = originalScrollerOverflowY;
+                cm.setSize(null, originalWrapperHeight || '90%'); 
+                cm.scrollTo(originalScrollInfo.left, originalScrollInfo.top);
+                cm.refresh();
+                showStatus('Render selesai.', 'success', 2000);
+            }
+        }
+
+        async function convertAndDownloadJpg() {
+            try {
+                const blob = await generateFullJpgBlob();
+                if (!blob) throw new Error('Blob creation failed');
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `full-code-v12-${Date.now()}.jpg`;
+                a.click();
+                URL.revokeObjectURL(url);
+            } catch (e) {
+                showStatus('Gagal membuat JPG: ' + e.message, 'danger');
+            }
+        }
+        
+        async function shareAsText() {
+            const code = cm.getValue();
+            const shareData = {
+                title: 'Kode dari Edy Sahputra V12',
+                text: `Kode dari Notepad Canggih:\n\n${code}`
+            };
+
+            try {
+                if (navigator.canShare(shareData)) {
+                    await navigator.share(shareData);
+                    showStatus('Berbagi teks berhasil!', 'success');
+                } else {
+                    await navigator.clipboard.writeText(shareData.text);
+                    showStatus('Berbagi tidak didukung. Kode disalin ke clipboard!', 'info');
+                }
+            } catch (e) {
+                if (e.name !== 'AbortError') showStatus('Berbagi dibatalkan/gagal.', 'danger');
+            }
+        }
+        
+        function checkCapabilities() {
+            if (!navigator.share) {
+                const btn = document.getElementById('shareBtn');
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-ban"></i> Share (Unsupported)';
+                btn.style.opacity = '0.5';
+            }
+        }
+        
+        function toggleDropdown() { dropdownEl.classList.toggle('show'); }
+    
+     // --- LOGIKA PWA UPDATE NOTIFICATION ---
+        let newWorker;
+        function showUpdateNotification() {
+            const notification = document.getElementById('updateNotification');
+            const reloadButton = document.getElementById('reloadButton');
+            notification.style.display = 'flex';
+            reloadButton.addEventListener('click', () => {
+                newWorker.postMessage({ action: 'skipWaiting' });
+            });
+        }
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./sw.js').then(reg => {
+                if (reg.waiting) {
+                    newWorker = reg.waiting;
+                    showUpdateNotification();
+                    return;
+                }
+                reg.addEventListener('updatefound', () => {
+                    newWorker = reg.installing;
+                    newWorker.addEventListener('statechange', () => {
+                        if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                            showUpdateNotification();
+                        }
+                    });
+                });
+            }).catch(error => {
+                console.log('Registrasi Service Worker gagal:', error);
+            });
+            let refreshing;
+            navigator.serviceWorker.addEventListener('controllerchange', () => {
+                if (refreshing) return;
+                window.location.reload();
+                refreshing = true;
+            });
+        }
+
+        // --- LOGIKA PROMPT INSTALASI KUSTOM ---
+        let deferredPrompt;
+        const installContainer = document.getElementById('install-container');
+        const installButton = document.getElementById('install-button');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            installContainer.classList.remove('hidden');
+        });
+
+        installButton.addEventListener('click', async () => {
+            installContainer.classList.add('hidden');
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                console.log(`Respons pengguna: ${outcome}`);
+                deferredPrompt = null;
+            }
+        });
+
+        window.addEventListener('appinstalled', () => {
+            console.log('Aplikasi berhasil di-install!');
+            installContainer.classList.add('hidden');
+            deferredPrompt = null;
+        });
+    </script>
+</body>
+</html>
