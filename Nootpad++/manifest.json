@@ -1,23 +1,29 @@
 {
-  "name": "Nootpad++",
-  "short_name": "Nootpad",
+  "name": "Notepad | Edy Sahputra",
+  "short_name": "Notepad",
+  "description": "Notepad PWA. Mendukung offline, berbagai bahasa, dan fitur utilitas.",
   "start_url": "./",
+  "scope": "./",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#ffffff",
-  "orientation": "portrait-primary",
+  "orientation": "portrait", 
+  "background_color": "#343a40",
+  "theme_color": "#343a40",
   "icons": [
     {
-      "src": "android-chrome-512x512.png",
+      "src": "icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512x512.png",
       "sizes": "512x512",
       "type": "image/png"
     },
     {
-      "src": "android-chrome-192x192.png",
-      "sizes": "512x512",
-      "type": "image/png"
+      "src": "./favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
     }
-  ]
+  ],
+  "prefer_related_applications": false
 }
-
-
