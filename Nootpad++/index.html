@@ -1,519 +1,413 @@
 <!DOCTYPE html>
-
 <html lang="id">
 
 <head>
-
     <meta charset="UTF-8">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>All-in-One Dev Editor | Edy Sahputra</title>
-
+    
+    <!-- PWA MANIFEST & THEME -->
     <link rel="manifest" href="./manifest.json">
-
     <meta name="theme-color" content="#343a40">
-
     <link href='./favicon.ico' rel='icon' type='image/x-icon' />
 
+    <!-- Library CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-
-    
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/material-darker.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/lint/lint.min.css">
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/material-darker.min.css"> <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/lint/lint.min.css">
-
-    
-
+    <!-- Library JS (di Head) -->
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
-
-    
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/htmlhint/1.1.4/htmlhint.js"></script>
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/csslint/1.0.5/csslint.js"></script>
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jshint/2.13.6/jshint.min.js"></script>
-
     <style>
-
+        /* Gaya CSS yang sudah ada... */
         :root {
-
             --primary-color: #0d6efd;
-
             --dark-bg: #212529;
-
             --light-text: #f8f9fa;
-
         }
 
-        
-
-        * { box-sizing: border-box; }
+        * {
+            box-sizing: border-box;
+        }
 
         body {
-
             font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-
             margin: 0;
-
-            background-color: #343a40; /* Warna gelap untuk nuansa dev */
-
+            background-color: #343a40;
             color: var(--light-text);
-
             display: flex;
-
             flex-direction: column;
-
             align-items: center;
-
             padding: 0;
-
             min-height: 100vh;
-
         }
 
         .container {
-
             width: 100%;
-
-            height: 100vh; /* Editor memenuhi viewport */
-
+            height: 100vh;
             display: flex;
-
             flex-direction: column;
-
             padding: 0;
-
             margin: 0;
-
             overflow: hidden;
-
         }
 
         .header {
-
             text-align: center;
-
             padding: 10px;
-
             background-color: var(--dark-bg);
-
             border-bottom: 3px solid var(--primary-color);
-
         }
 
-        .header h2 { margin: 0; color: var(--primary-color); font-weight: 700; font-size: 1.5rem; }
+        .header h2 {
+            margin: 0;
+            color: var(--primary-color);
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
 
-        .header .credit { margin-top: 5px; font-size: 0.85rem; color: #adb5bd; }
-
-        
+        .header .credit {
+            margin-top: 5px;
+            font-size: 0.85rem;
+            color: #adb5bd;
+        }
 
         /* CodeMirror Customization */
-
         .CodeMirror {
-
-            flex-grow: 1; /* Memenuhi sisa ruang */
-
-            height: auto; /* Dikelola oleh flexbox */
-
+            flex-grow: 1;
+            height: auto;
             font-family: 'Fira Code', 'Consolas', monospace;
-
-            font-size: 16px; /* Lebih besar */
-
+            font-size: 16px;
             border: none;
-
             border-radius: 0;
-
         }
 
         /* Status Bar di bawah CodeMirror */
-
         #status {
-
             padding: 8px 15px;
-
             font-size: 0.9rem;
-
             text-align: left;
-
             opacity: 0;
-
             transition: opacity 0.3s ease;
-
             background-color: #343a40;
-
             color: white;
-
             border-top: 1px solid #495057;
-
         }
 
-        #status.show { opacity: 1; }
+        #status.show {
+            opacity: 1;
+        }
 
-        #status.success { background-color: #198754; }
+        #status.success {
+            background-color: #198754;
+        }
 
-        #status.error { background-color: #dc3545; }
+        #status.error {
+            background-color: #dc3545;
+        }
 
-        #status.loading { background-color: #0dcaf0; color: var(--dark-bg); }
+        #status.loading {
+            background-color: #0dcaf0;
+            color: var(--dark-bg);
+        }
 
         /* ========================================================= */
-
         /* FLOATING ACTION BUTTON (FAB) & MENU */
-
         /* ========================================================= */
-
         .fab-container {
-
             position: fixed;
-
             bottom: 25px;
-
             right: 25px;
-
             z-index: 1000;
-
         }
 
         .fab-main {
-
             background-color: var(--primary-color);
-
             color: white;
-
             width: 60px;
-
             height: 60px;
-
             border-radius: 50%;
-
             border: none;
-
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
-
             font-size: 24px;
-
             cursor: pointer;
-
             transition: transform 0.3s ease;
-
         }
 
-        
 
-        .fab-main.open { transform: rotate(45deg); }
+        .fab-main.open {
+            transform: rotate(45deg);
+        }
 
         .fab-menu {
-
             position: absolute;
-
             bottom: 70px;
-
             right: 0;
-
             display: flex;
-
             flex-direction: column-reverse;
-
             gap: 10px;
-
             opacity: 0;
-
             visibility: hidden;
-
             transition: opacity 0.3s, visibility 0.3s;
-
         }
 
         .fab-container.open .fab-menu {
-
             opacity: 1;
-
             visibility: visible;
-
         }
 
         .fab-button {
-
             background-color: #343a40;
-
             color: white;
-
             width: 50px;
-
             height: 50px;
-
             border-radius: 50%;
-
             border: none;
-
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-
             font-size: 18px;
-
             cursor: pointer;
-
             position: relative;
-
             transition: background-color 0.2s;
-
         }
 
-        .fab-button:hover { background-color: #495057; }
+        .fab-button:hover {
+            background-color: #495057;
+        }
 
-        
 
-        .fab-button.danger { background-color: #dc3545; }
+        .fab-button.danger {
+            background-color: #dc3545;
+        }
 
-        .fab-button.danger:hover { background-color: #c82333; }
+        .fab-button.danger:hover {
+            background-color: #c82333;
+        }
 
-        
 
         /* Tooltip untuk FAB */
-
         .fab-button .tooltip {
-
             position: absolute;
-
             right: 60px;
-
             background-color: rgba(0, 0, 0, 0.7);
-
             color: white;
-
             padding: 5px 10px;
-
             border-radius: 6px;
-
             white-space: nowrap;
-
             font-size: 0.8rem;
-
             line-height: 1.2;
-
             pointer-events: none;
-
             opacity: 0;
-
             transition: opacity 0.2s;
-
         }
 
-        .fab-button:hover .tooltip { opacity: 1; }
+        .fab-button:hover .tooltip {
+            opacity: 1;
+        }
 
-        
 
         /* Dropdown khusus untuk FAB (File dan Mode) */
-
         .fab-dropdown {
-
             position: relative;
-
         }
 
-        
 
         .fab-sub-menu {
-
             position: absolute;
-
             right: 60px;
-
             bottom: 0;
-
             background: #343a40;
-
             border-radius: 8px;
-
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-
             padding: 8px;
-
             display: none;
-
             flex-direction: column;
-
             gap: 5px;
-
             min-width: 180px;
-
+            z-index: 10; /* Tambahkan z-index */
         }
 
-        
 
-        .fab-sub-menu.show { display: flex; }
+        .fab-sub-menu.show {
+            display: flex;
+        }
 
         .fab-sub-menu button {
-
             background: transparent;
-
             color: white;
-
             border: none;
-
             padding: 8px 10px;
-
             text-align: left;
-
             border-radius: 4px;
-
             cursor: pointer;
-
             display: flex;
-
             align-items: center;
-
             gap: 8px;
-
             font-size: 0.9rem;
-
         }
 
-        
 
-        .fab-sub-menu button:hover { background-color: #495057; }
+        .fab-sub-menu button:hover {
+            background-color: #495057;
+        }
 
-        
-
-        /* Menghilangkan PWA prompt standar */
-
-        .install-prompt { display: none !important; }
 
         /* Overlay untuk menu mode */
-
         #mode-overlay {
-
             position: fixed;
-
             top: 0;
-
             left: 0;
-
             width: 100%;
-
             height: 100%;
-
             background-color: rgba(0, 0, 0, 0.7);
-
             z-index: 10000;
-
             display: none;
-
             justify-content: center;
-
             align-items: center;
-
         }
 
         .mode-list {
-
             background-color: var(--dark-bg);
-
             padding: 20px;
-
             border-radius: 10px;
-
             max-height: 80%;
-
             overflow-y: auto;
-
             width: 90%;
-
             max-width: 500px;
-
         }
 
-        
 
-        .mode-list h3 { color: var(--primary-color); margin-top: 0; }
+        .mode-list h3 {
+            color: var(--primary-color);
+            margin-top: 0;
+        }
 
-        
 
         .mode-button-grid {
-
             display: grid;
-
             grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-
             gap: 10px;
-
         }
 
         .mode-button-grid button {
-
             background-color: #343a40;
-
             color: white;
-
             border: 1px solid #495057;
-
             padding: 10px;
-
             border-radius: 8px;
-
             cursor: pointer;
-
             transition: background-color 0.2s;
-
             display: flex;
-
             flex-direction: column;
-
             align-items: center;
-
             justify-content: center;
-
             font-size: 0.9rem;
-
             height: 70px;
-
         }
 
-        .mode-button-grid button i { font-size: 1.5rem; margin-bottom: 5px; }
+        .mode-button-grid button i {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
 
-        .mode-button-grid button:hover { background-color: var(--primary-color); border-color: var(--primary-color); }
+        .mode-button-grid button:hover {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        /* ========================================================= */
+        /* PWA UI (Install Prompt & Update Notification) BARU */
+        /* ========================================================= */
+        .install-prompt, .update-notification {
+            position: fixed;
+            z-index: 9999; 
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            display: none; 
+            align-items: center;
+            justify-content: space-between;
+            width: 90%;
+            max-width: 450px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .install-prompt {
+            bottom: 20px;
+            background-color: #0d6efd; /* Primary blue */
+            color: white;
+            gap: 15px;
+        }
+        
+        .install-prompt p { margin: 0; font-weight: 500; }
+        
+        .tombol-install {
+            background-color: #ffffff;
+            color: #0d6efd;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+        .tombol-install:hover { background-color: #f0f0f0; }
+
+        .update-notification {
+            top: 20px;
+            background: #ffc107; /* Yellow/Warning */
+            color: #212529;
+            gap: 15px;
+        }
+
+        .update-notification p { margin: 0; }
+        .update-notification button {
+            background: #212529;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+        }
 
     </style>
-
+    <!-- Service Worker Registration -->
     <script>
-
         if ('serviceWorker' in navigator) {
-
-          navigator.serviceWorker.register('service-worker.js')
-
-            .then(function (registration) {
-
-              console.log('ServiceWorker registered with scope:', registration.scope);
-
-            })
-
-            .catch(function (error) {
-
-              console.log('ServiceWorker registration failed:', error);
-
-            });
-
+            navigator.serviceWorker.register('service-worker.js')
+                .then(function (registration) {
+                    console.log('ServiceWorker registered with scope:', registration.scope);
+                })
+                .catch(function (error) {
+                    console.log('ServiceWorker registration failed:', error);
+                });
         }
-
-      </script> 
-
+    </script>
 </head>
 
 <body>
-
+    
+    <!-- PWA Update Notification -->
+    <div id="updateNotification" class="update-notification">
+        <p>Versi baru tersedia! Muat ulang untuk update.</p>
+        <button id="reloadButton">Perbarui</button>
+    </div>
+    
+    <!-- PWA Install Prompt -->
+    <div id="install-container" class="install-prompt hidden">
+        <p>Install Aplikasi untuk pengalaman offline terbaik.</p>
+        <button id="install-button" class="tombol-install">Install Sekarang</button>
+    </div>
+    
     <div class="container">
-
         <div class="header">
-
-            <h2><i class="fas fa-hammer"></i> All-in-One Dev Editor</h2>
-
-            <div class="credit">Dibuat oleh <strong>Edy Sahputra</strong> - Mendukung Android & Windows Dev</div>
-
-        </div>
-
-        <textarea id="editor-area" name="editor-area">
-
+            <h2><i class="fas fa-hammer"></i>All-in-One Dev Editor</h2>
+            <div class="credit">Dibuat oleh <strong>Edy Sahputra</strong>- Mendukung Android & Windows Dev</div>
+        </div><textarea id="editor-area" name="editor-area">
 /* * Selamat Datang di All-in-One Dev Editor!
 
  * * Gunakan tombol + Mengambang di kanan bawah untuk:
@@ -530,213 +424,86 @@
 
  * */
 
- 
 
-<!DOCTYPE html>
 
-<html lang="id">
-
-<head>
-
-    <title>Kode Edy</title>
-
-</head>
-
-<body>
-
-    <h1>Editor Siap Pakai!</h1>
-
-</body>
-
-</html>
-
-        </textarea>
-
+<!DOCTYPE html><html lang="id"><head><title>Kode Edy</title></head><body><h1>Editor Siap Pakai !</h1></body></html></textarea>
         <div id="status">Status: Mode HTML Mixed</div>
-
     </div>
-
-    
-
     <div id="fabContainer" class="fab-container">
-
         <div class="fab-menu">
-
-            <div class="fab-dropdown" onmouseleave="hideSubMenu('dlDropdown')">
-
-                <button class="fab-button" onclick="toggleSubMenu('dlDropdown')">
-
-                    <i class="fas fa-save"></i>
-
-                    <span class="tooltip">Simpan & Ekspor</span>
-
-                </button>
-
-                <div id="dlDropdown" class="fab-sub-menu">
-
-                    <button onclick="downloadFile('html'); hideSubMenu('dlDropdown')"><i class="fab fa-html5" style="color: orange;"></i> HTML (.html)</button>
-
-                    <button onclick="downloadFile('css'); hideSubMenu('dlDropdown')"><i class="fab fa-css3-alt" style="color: blue;"></i> CSS (.css)</button>
-
-                    <button onclick="downloadFile('js'); hideSubMenu('dlDropdown')"><i class="fab fa-js" style="color: #f7df1e;"></i> JavaScript (.js)</button>
-
-                    <hr style="margin: 5px 0; border-color: #495057;">
-
-                    <button onclick="downloadFile('xml'); hideSubMenu('dlDropdown')"><i class="fas fa-code"></i> XML (Android Layout)</button>
-
-                    <button onclick="downloadFile('java'); hideSubMenu('dlDropdown')"><i class="fab fa-java"></i> Java (.java)</button>
-
-                    <button onclick="downloadFile('cs'); hideSubMenu('dlDropdown')"><i class="fas fa-terminal"></i> C# (.cs)</button>
-
-                    <button onclick="downloadFile('json'); hideSubMenu('dlDropdown')"><i class="fas fa-database"></i> JSON (.json)</button>
-
-                    <hr style="margin: 5px 0; border-color: #495057;">
-
-                    <button onclick="downloadCustom(); hideSubMenu('dlDropdown')"><i class="fas fa-file-export"></i> Ekstensi Lain</button>
-
-                    <button onclick="convertAndDownloadJpg(); hideSubMenu('dlDropdown')"><i class="fas fa-image"></i> Unduh Full JPG</button>
-
+            <div class="fab-dropdown" onmouseleave="hideSubMenu('dlDropdown')"><button class="fab-button"
+                    onclick="toggleSubMenu('dlDropdown')"><i class="fas fa-save"></i><span class="tooltip">Simpan &
+                        Ekspor</span></button>
+                <div id="dlDropdown" class="fab-sub-menu"><button
+                        onclick="downloadFile('html'); hideSubMenu('dlDropdown')"><i class="fab fa-html5"
+                            style="color: orange;"></i>HTML (.html)</button><button
+                        onclick="downloadFile('css'); hideSubMenu('dlDropdown')"><i class="fab fa-css3-alt"
+                            style="color: blue;"></i>CSS (.css)</button><button
+                        onclick="downloadFile('js'); hideSubMenu('dlDropdown')"><i class="fab fa-js"
+                            style="color: #f7df1e;"></i>JavaScript (.js)</button>
+                    <hr style="margin: 5px 0; border-color: #495057;"><button
+                        onclick="downloadFile('xml'); hideSubMenu('dlDropdown')"><i class="fas fa-code"></i>XML
+                        (Android Layout)</button><button
+                        onclick="downloadFile('java'); hideSubMenu('dlDropdown')"><i class="fab fa-java"></i>Java
+                        (.java)</button><button onclick="downloadFile('cs'); hideSubMenu('dlDropdown')"><i
+                            class="fas fa-terminal"></i>C# (.cs)</button><button
+                        onclick="downloadFile('json'); hideSubMenu('dlDropdown')"><i
+                            class="fas fa-database"></i>JSON (.json)</button>
+                    <hr style="margin: 5px 0; border-color: #495057;"><button
+                        onclick="downloadCustom(); hideSubMenu('dlDropdown')"><i
+                            class="fas fa-file-export"></i>Ekstensi Lain</button><button
+                        onclick="convertAndDownloadJpg(); hideSubMenu('dlDropdown')"><i
+                            class="fas fa-image"></i>Unduh Full JPG</button>
                 </div>
-
-            </div>
-
-            <button class="fab-button" onclick="document.getElementById('fileInput').click()">
-
-                <i class="fas fa-folder-open"></i>
-
-                <span class="tooltip">Buka File</span>
-
-            </button>
-
-            <input type="file" id="fileInput" hidden onchange="handleFileSelect(event)">
-
-            
-
-            <button class="fab-button" onclick="toggleModeOverlay()">
-
-                <i class="fas fa-laptop-code"></i>
-
-                <span class="tooltip">Ubah Mode Editor</span>
-
-            </button>
-
-            <button class="fab-button" onclick="undo()">
-
-                <i class="fas fa-undo"></i>
-
-                <span class="tooltip">Undo</span>
-
-            </button>
-
-            
-
-            <button class="fab-button" onclick="redo()">
-
-                <i class="fas fa-redo"></i>
-
-                <span class="tooltip">Redo</span>
-
-            </button>
-
-            <button id="shareBtn" class="fab-button" onclick="shareAsText()">
-
-                <i class="fas fa-share-alt"></i>
-
-                <span class="tooltip">Bagikan Text</span>
-
-            </button>
-
-            
-
-            <button class="fab-button danger" onclick="clearNotes()">
-
-                <i class="fas fa-trash"></i>
-
-                <span class="tooltip">Reset Editor</span>
-
-            </button>
-
-            
-
-        </div>
-
-        
-
-        <button id="fabMainBtn" class="fab-main" onclick="toggleFabMenu()">
-
-            <i class="fas fa-plus"></i>
-
-        </button>
-
+            </div><button class="fab-button" onclick="document.getElementById('fileInput').click()"><i
+                    class="fas fa-folder-open"></i><span class="tooltip">Buka File</span></button><input type="file"
+                id="fileInput" hidden onchange="handleFileSelect(event)"><button class="fab-button"
+                onclick="toggleModeOverlay()"><i class="fas fa-laptop-code"></i><span class="tooltip">Ubah Mode
+                    Editor</span></button><button class="fab-button" onclick="undo()"><i
+                    class="fas fa-undo"></i><span class="tooltip">Undo</span></button><button class="fab-button"
+                onclick="redo()"><i class="fas fa-redo"></i><span class="tooltip">Redo</span></button><button
+                id="shareBtn" class="fab-button" onclick="shareAsText()"><i class="fas fa-share-alt"></i><span
+                    class="tooltip">Bagikan Text</span></button><button class="fab-button danger"
+                onclick="clearNotes()"><i class="fas fa-trash"></i><span class="tooltip">Reset
+                    Editor</span></button>
+        </div><button id="fabMainBtn" class="fab-main" onclick="toggleFabMenu()"><i class="fas fa-plus"></i></button>
     </div>
-
-    
-
     <div id="mode-overlay">
-
         <div class="mode-list">
-
-            <h3><i class="fas fa-laptop-code"></i> Pilih Mode Bahasa</h3>
-
-            <div class="mode-button-grid">
-
-                <button onclick="setMode('htmlmixed')"><i class="fab fa-html5"></i> HTML/CSS/JS</button>
-
-                <button onclick="setMode('javascript')"><i class="fab fa-js"></i> JavaScript/Node</button>
-
-                <button onclick="setMode('css')"><i class="fab fa-css3-alt"></i> CSS/SCSS</button>
-
-                <button onclick="setMode('xml')"><i class="fas fa-code"></i> XML (Android Layout)</button>
-
-                <button onclick="setMode('json')"><i class="fas fa-database"></i> JSON</button>
-
-                <button onclick="setMode('clike')"><i class="fab fa-java"></i> Java/C/C++</button>
-
-                <button onclick="setMode('text/x-csharp')"><i class="fas fa-terminal"></i> C# (Windows)</button>
-
-                <button onclick="setMode('python')"><i class="fab fa-python"></i> Python</button>
-
-                <button onclick="setMode('markdown')"><i class="fab fa-markdown"></i> Markdown</button>
-
-                <button onclick="setMode('text/plain')"><i class="fas fa-file-alt"></i> Teks Polos</button>
-
-            </div>
-
-            <p style="margin-top: 20px; text-align: right;"><button onclick="toggleModeOverlay()" style="background-color: #dc3545; color: white; border: none; padding: 10px 15px; border-radius: 6px; cursor: pointer;">Tutup</button></p>
-
+            <h3><i class="fas fa-laptop-code"></i>Pilih Mode Bahasa</h3>
+            <div class="mode-button-grid"><button onclick="setMode('htmlmixed')"><i
+                        class="fab fa-html5"></i>HTML/CSS/JS</button><button onclick="setMode('javascript')"><i
+                        class="fab fa-js"></i>JavaScript/Node</button><button onclick="setMode('css')"><i
+                        class="fab fa-css3-alt"></i>CSS/SCSS</button><button onclick="setMode('xml')"><i
+                        class="fas fa-code"></i>XML (Android Layout)</button><button onclick="setMode('json')"><i
+                        class="fas fa-database"></i>JSON</button><button onclick="setMode('clike')"><i
+                        class="fab fa-java"></i>Java/C/C++</button><button onclick="setMode('text/x-csharp')"><i
+                        class="fas fa-terminal"></i>C# (Windows)</button><button onclick="setMode('python')"><i
+                        class="fab fa-python"></i>Python</button><button onclick="setMode('markdown')"><i
+                        class="fab fa-markdown"></i>Markdown</button><button onclick="setMode('text/plain')"><i
+                        class="fas fa-file-alt"></i>Teks Polos</button></div>
+            <p style="margin-top: 20px; text-align: right;"><button onclick="toggleModeOverlay()"
+                    style="background-color: #dc3545; color: white; border: none; padding: 10px 15px; border-radius: 6px; cursor: pointer;">Tutup</button>
+            </p>
         </div>
-
     </div>
-
+     
+    <!-- Library CSS (Dipertahankan) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/xml/xml.min.js"></script>
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/javascript/javascript.min.js"></script>
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/css/css.min.js"></script>
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/htmlmixed/htmlmixed.min.js"></script>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/clike/clike.min.js"></script> <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/python/python.min.js"></script>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/clike/clike.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/python/python.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/markdown/markdown.min.js"></script>
-
-    
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/lint/lint.min.js"></script>
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/lint/html-lint.min.js"></script>
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/lint/css-lint.min.js"></script>
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/lint/json-lint.min.js"></script>
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/lint/javascript-lint.min.js"></script>
-
-    <script>
-
-        const STORAGE_KEY = 'notepad_v11_edy_data';
+    <script>const STORAGE_KEY = 'notepad_v11_edy_data';
+    
 
         let cm;
 
@@ -752,23 +519,58 @@
 
         const FILE_CONFIGS = {
 
-            'html': { ext: '.html', mime: 'text/html', mode: 'htmlmixed' },
+            'html': {
+                ext: '.html', mime: 'text/html', mode: 'htmlmixed'
+            }
 
-            'css': { ext: '.css', mime: 'text/css', mode: 'css' },
+            ,
 
-            'js': { ext: '.js', mime: 'application/javascript', mode: 'javascript' },
+            'css': {
+                ext: '.css', mime: 'text/css', mode: 'css'
+            }
 
-            'json': { ext: '.json', mime: 'application/json', mode: 'application/json' },
+            ,
 
-            'xml': { ext: '.xml', mime: 'application/xml', mode: 'xml' }, // Untuk Android Layouts/Config
+            'js': {
+                ext: '.js', mime: 'application/javascript', mode: 'javascript'
+            }
 
-            'java': { ext: '.java', mime: 'text/x-java', mode: 'text/x-java' }, // Untuk Android Apps
+            ,
 
-            'cs': { ext: '.cs', mime: 'text/x-csharp', mode: 'text/x-csharp' }, // Untuk Windows Apps (.NET)
+            'json': {
+                ext: '.json', mime: 'application/json', mode: 'application/json'
+            }
 
-            'txt': { ext: '.txt', mime: 'text/plain', mode: 'text/plain' }
+            ,
 
-        };
+            'xml': {
+                ext: '.xml', mime: 'application/xml', mode: 'xml'
+            }
+
+            ,
+            // Untuk Android Layouts/Config
+
+            'java': {
+                ext: '.java', mime: 'text/x-java', mode: 'text/x-java'
+            }
+
+            ,
+            // Untuk Android Apps
+
+            'cs': {
+                ext: '.cs', mime: 'text/x-csharp', mode: 'text/x-csharp'
+            }
+
+            ,
+            // Untuk Windows Apps (.NET)
+
+            'txt': {
+                ext: '.txt', mime: 'text/plain', mode: 'text/plain'
+            }
+
+        }
+
+            ;
 
         // --- Initialization ---
 
@@ -778,7 +580,9 @@
 
             checkCapabilities();
 
-        };
+        }
+
+            ;
 
         function initEditor() {
 
@@ -794,15 +598,14 @@
 
                 lineWrapping: true,
 
-                gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter", "CodeMirror-lint-markers"], 
+                gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter", "CodeMirror-lint-markers"],
 
                 lint: true,
 
-                viewportMargin: Infinity 
-
+                viewportMargin: Infinity
             });
 
-            
+
 
             const saved = localStorage.getItem(STORAGE_KEY);
 
@@ -814,7 +617,7 @@
 
             }
 
-            
+
 
             cm.on('change', () => {
 
@@ -824,7 +627,7 @@
 
                 if (cm.getOption('lint') && cm.getOption('mode') !== 'text/plain') {
 
-                     CodeMirror.signal(cm, 'change', cm); 
+                    CodeMirror.signal(cm, 'change', cm);
 
                 }
 
@@ -862,7 +665,7 @@
 
         }
 
-        
+
 
         function toggleSubMenu(id) {
 
@@ -872,13 +675,13 @@
 
         }
 
-        
+
 
         function hideSubMenu(id) {
 
-             const subMenu = document.getElementById(id);
+            const subMenu = document.getElementById(id);
 
-             subMenu.classList.remove('show');
+            subMenu.classList.remove('show');
 
         }
 
@@ -906,7 +709,7 @@
 
         }
 
-        
+
 
         // --- Mode Selector ---
 
@@ -916,7 +719,10 @@
 
             // Aktifkan linting hanya untuk mode yang didukung
 
-            const isLintable = ['htmlmixed', 'javascript', 'css', 'application/json'].includes(mode);
+            const isLintable = ['htmlmixed',
+                'javascript',
+                'css',
+                'application/json'].includes(mode);
 
             cm.setOption('lint', isLintable);
 
@@ -928,7 +734,7 @@
 
         }
 
-        
+
 
         function toggleModeOverlay() {
 
@@ -938,9 +744,15 @@
 
         // --- Editor Operations ---
 
-        function undo() { cm.undo(); showStatus('Undo dilakukan.', 'loading', 1000); }
+        function undo() {
+            cm.undo();
+            showStatus('Undo dilakukan.', 'loading', 1000);
+        }
 
-        function redo() { cm.redo(); showStatus('Redo dilakukan.', 'loading', 1000); }
+        function redo() {
+            cm.redo();
+            showStatus('Redo dilakukan.', 'loading', 1000);
+        }
 
         function clearNotes() {
 
@@ -976,7 +788,7 @@
 
                 cm.clearHistory();
 
-                
+
 
                 const ext = file.name.split('.').pop().toLowerCase();
 
@@ -984,7 +796,7 @@
 
                 const config = Object.values(FILE_CONFIGS).find(c => c.ext.includes(ext));
 
-                
+
 
                 let modeToSet = 'text/plain';
 
@@ -992,7 +804,8 @@
 
                     modeToSet = config.mode;
 
-                } else {
+                }
+                else {
 
                     // Coba deteksi mode untuk ekstensi yang tidak di config
 
@@ -1002,15 +815,17 @@
 
                 }
 
-                
+
 
                 setMode(modeToSet); // Menggunakan fungsi setMode untuk mode & linting
 
-                
+
 
                 showStatus(`File dimuat: ${file.name}. Mode: ${modeToSet}.`);
 
-            };
+            }
+
+                ;
 
             reader.readAsText(file);
 
@@ -1022,7 +837,11 @@
 
         function downloadFile(type) {
 
-            const cfg = FILE_CONFIGS[type] || { ext: '.' + type, mime: 'text/plain' };
+            const cfg = FILE_CONFIGS[type] || {
+                ext: '.' + type, mime: 'text/plain'
+            }
+
+                ;
 
             startDownload(cfg.ext, cfg.mime);
 
@@ -1042,9 +861,11 @@
 
             if (!name) return;
 
-            
 
-            const blob = new Blob([cm.getValue()], { type: mime });
+
+            const blob = new Blob([cm.getValue()], {
+                type: mime
+            });
 
             const url = URL.createObjectURL(blob);
 
@@ -1072,7 +893,7 @@
 
             const wrap = cm.getWrapperElement();
 
-            const originalHeight = wrap.style.height; 
+            const originalHeight = wrap.style.height;
 
             const scrollInfo = cm.getScrollInfo();
 
@@ -1088,7 +909,7 @@
 
                 const canvas = await html2canvas(wrap, {
 
-                    scale: 2, 
+                    scale: 2,
 
                     useCORS: true,
 
@@ -1101,20 +922,23 @@
                     scrollX: -window.scrollX,
 
                     scrollY: -window.scrollY
-
                 });
 
                 return new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.9));
 
-            } catch (e) {
+            }
+
+            catch (e) {
 
                 console.error('JPG Error:', e);
 
                 throw e;
 
-            } finally {
+            }
 
-                cm.setSize(null, originalHeight || 'auto'); 
+            finally {
+
+                cm.setSize(null, originalHeight || 'auto');
 
                 cm.scrollTo(scrollInfo.left, scrollInfo.top);
 
@@ -1146,7 +970,9 @@
 
                 hideAllSubMenus();
 
-            } catch (e) {
+            }
+
+            catch (e) {
 
                 showStatus('Gagal membuat JPG: ' + e.message, 'error');
 
@@ -1154,7 +980,7 @@
 
         }
 
-        
+
 
         // --- Tombol Bagikan Text (Dibiarkan Sesuai Asli) ---
 
@@ -1167,8 +993,9 @@
                 title: 'Kode dari Edy Sahputra V11',
 
                 text: `Kode dari All-in-One Dev Editor:\n\n${code}`
+            }
 
-            };
+                ;
 
             try {
 
@@ -1178,7 +1005,8 @@
 
                     showStatus('Berbagi teks berhasil!', 'success');
 
-                } else {
+                }
+                else {
 
                     await navigator.clipboard.writeText(shareData.text);
 
@@ -1186,7 +1014,9 @@
 
                 }
 
-            } catch (e) {
+            }
+
+            catch (e) {
 
                 if (e.name !== 'AbortError') showStatus('Berbagi dibatalkan/gagal.', 'error');
 
@@ -1194,17 +1024,74 @@
 
         }
 
-    
 
-        // --- PWA LOGIC (Dibiarkan Sesuai Asli) ---
+        // --- LOGIKA PWA UPDATE NOTIFICATION & INSTALL PROMPT (Dipertahankan) ---
+        let deferredPrompt;
+        const installContainer = document.getElementById('install-container');
+        const installButton = document.getElementById('install-button');
+        let newWorker;
+        const notification = document.getElementById('updateNotification');
+        const reloadButton = document.getElementById('reloadButton');
 
-        // ... (PWA Update/Install Prompt Logic) ...
+        function showUpdateNotification() {
+            notification.style.display = 'flex';
+            reloadButton.addEventListener('click', () => {
+                newWorker.postMessage({ action: 'skipWaiting' });
+            });
+        }
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistration('service-worker.js').then(reg => {
+                if (reg && reg.waiting) {
+                    newWorker = reg.waiting;
+                    showUpdateNotification();
+                    return;
+                }
+                if (reg) {
+                    reg.addEventListener('updatefound', () => {
+                        newWorker = reg.installing;
+                        newWorker.addEventListener('statechange', () => {
+                            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                showUpdateNotification();
+                            }
+                        });
+                    });
+                }
+            });
+            let refreshing;
+            navigator.serviceWorker.addEventListener('controllerchange', () => {
+                if (refreshing) return;
+                window.location.reload();
+                refreshing = true;
+            });
+        }
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            // Hanya tampilkan jika belum diinstal
+            if (!window.matchMedia('(display-mode: standalone)').matches) {
+                installContainer.classList.remove('hidden');
+                installContainer.style.display = 'flex';
+            }
+        });
+        installButton.addEventListener('click', async () => {
+            installContainer.classList.add('hidden');
+            installContainer.style.display = 'none';
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                console.log(`Respons pengguna: ${outcome}`);
+                deferredPrompt = null;
+            }
+        });
+        window.addEventListener('appinstalled', () => {
+            console.log('Aplikasi berhasil di-install!');
+            installContainer.classList.add('hidden');
+            installContainer.style.display = 'none';
+            deferredPrompt = null;
+        });
+
 
     </script>
-
-    
-
 </body>
 
 </html>
-
